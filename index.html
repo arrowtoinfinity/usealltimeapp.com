@@ -167,14 +167,22 @@
         #header-download-btn {
             opacity: 0;
             pointer-events: none;
-            transform: translateY(-10px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            max-width: 0;
+            padding-left: 0;
+            padding-right: 0;
+            margin-left: -2.5rem;
+            overflow: hidden;
+            white-space: nowrap;
+            transition: opacity 0.3s ease, max-width 0.3s ease, padding 0.3s ease, margin 0.3s ease;
         }
 
         #header-download-btn.visible {
             opacity: 1;
             pointer-events: auto;
-            transform: translateY(0);
+            max-width: 200px;
+            padding-left: var(--space-xl);
+            padding-right: var(--space-xl);
+            margin-left: 0;
         }
 
         .btn {
