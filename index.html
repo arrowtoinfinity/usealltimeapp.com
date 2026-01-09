@@ -764,6 +764,43 @@
             font-weight: 500;
         }
 
+        /* Platform Toggle */
+        .platform-toggle {
+            display: flex;
+            justify-content: center;
+            margin: 1.5rem 0;
+        }
+
+        .platform-toggle-container {
+            display: inline-flex;
+            background: var(--color-gray-100);
+            border-radius: var(--radius-full);
+            padding: 4px;
+            gap: 4px;
+        }
+
+        .platform-toggle-btn {
+            padding: 0.5rem 1.25rem;
+            border: none;
+            background: transparent;
+            border-radius: var(--radius-full);
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .platform-toggle-btn.active {
+            background: var(--color-white);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .platform-toggle-btn:hover:not(.active) {
+            color: var(--text-primary);
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -2434,12 +2471,7 @@
                 <span class="hero-badge-icon">
                     <svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
                 </span>
-                <span class="badge-platform-primary">Available on iOS</span>
-                <span class="badge-divider"></span>
-                <span class="badge-platform-secondary">
-                    <span class="badge-coming-soon-label">Coming Soon:</span>
-                    <span class="badge-platform-list">macOS</span>
-                </span>
+                <span class="badge-platform-primary">Available on iOS & macOS</span>
             </div>
             
             <h1>Plan your <span class="cycling-word-container"><span class="cycling-word active" data-word="day">day.</span><span class="cycling-word" data-word="routines">routines.</span><span class="cycling-word" data-word="focus">focus.</span><span class="cycling-word" data-word="goals">goals.</span><span class="cycling-word" data-word="health">health.</span><span class="cycling-word" data-word="nutrition">nutrition.</span><span class="cycling-word" data-word="life">life.</span></span></h1>
@@ -2466,6 +2498,14 @@
                     <h3 class="carousel-main-title">Powerful Controls</h3>
                     <p class="carousel-subtitle">Effortlessly Precise</p>
                 </div>
+
+                <div class="platform-toggle">
+                    <div class="platform-toggle-container">
+                        <button class="platform-toggle-btn active" data-platform="ios">iOS</button>
+                        <button class="platform-toggle-btn" data-platform="macos">macOS</button>
+                    </div>
+                </div>
+
                 <div class="phone-carousel">
                     <!-- Left Preview -->
                     <div class="phone-preview" data-screen="prev">
@@ -2994,6 +3034,54 @@
                     headerDownloadBtn.classList.remove('visible');
                 }
             }
+
+            // Platform toggle functionality
+            const platformToggleBtns = document.querySelectorAll('.platform-toggle-btn');
+            let currentPlatform = 'ios';
+
+            // App Store links for each platform
+            const appStoreLinks = {
+                ios: '#',   // TODO: Replace with actual iOS App Store URL
+                macos: '#'  // TODO: Replace with actual macOS App Store URL
+            };
+
+            // Video paths for each platform (same for now, update when macOS videos ready)
+            const platformVideos = {
+                ios: [
+                    'videos/1_Bottom Control Panel.mp4',
+                    'videos/2_Timeline.mp4',
+                    'videos/3_Checklist.mp4',
+                    'videos/4_Focus.mp4',
+                    'videos/5_Chat.mp4',
+                    'videos/6_Analytics Hub.mp4'
+                ],
+                macos: [
+                    'videos/1_Bottom Control Panel.mp4',
+                    'videos/2_Timeline.mp4',
+                    'videos/3_Checklist.mp4',
+                    'videos/4_Focus.mp4',
+                    'videos/5_Chat.mp4',
+                    'videos/6_Analytics Hub.mp4'
+                ]
+            };
+
+            platformToggleBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const platform = btn.dataset.platform;
+                    if (platform === currentPlatform) return;
+
+                    // Update active state
+                    platformToggleBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentPlatform = platform;
+
+                    // Update App Store button links
+                    if (heroAppStoreBtn) heroAppStoreBtn.href = appStoreLinks[platform];
+                    if (ctaAppStoreBtn) ctaAppStoreBtn.href = appStoreLinks[platform];
+
+                    // Videos are the same for now, but structure is ready for different videos per platform
+                });
+            });
 
             // Update gray timeline line to always reach the last circle
             function updateTimelineLineHeight() {
