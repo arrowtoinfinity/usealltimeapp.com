@@ -3091,15 +3091,20 @@
             const badgeWrapper = document.getElementById('badge-wrapper');
             let badgeOriginalTop = null;
             let badgeHeight = null;
+            let badgeInitialized = false;
 
-            function updateStickyBadge() {
-                if (!stickyBadge || !badgeWrapper) return;
-
-                // Calculate original position and height on first run
-                if (badgeOriginalTop === null) {
+            function initBadgeMeasurements() {
+                if (!stickyBadge || !badgeWrapper || badgeInitialized) return;
+                // Wait for animation to complete before measuring
+                setTimeout(() => {
                     badgeHeight = stickyBadge.offsetHeight;
                     badgeOriginalTop = badgeWrapper.getBoundingClientRect().top + window.scrollY;
-                }
+                    badgeInitialized = true;
+                }, 900); // After fadeInUp animation (0.8s)
+            }
+
+            function updateStickyBadge() {
+                if (!stickyBadge || !badgeWrapper || !badgeInitialized) return;
 
                 const scrollY = window.scrollY;
                 const headerHeight = 90;
@@ -3118,6 +3123,9 @@
                     }
                 }
             }
+
+            // Initialize badge measurements after animation
+            initBadgeMeasurements();
 
             // Update gray timeline line to always reach the last circle
             function updateTimelineLineHeight() {
@@ -3242,10 +3250,18 @@
                 updateCenteredCard();
                 updateTimelineLineHeight();
                 updateHeaderButtonVisibility();
-                badgeOriginalTop = null; // Reset on resize
+                // Reset badge measurements on resize
+                badgeOriginalTop = null;
                 badgeHeight = null;
+                badgeInitialized = false;
                 if (badgeWrapper) badgeWrapper.style.height = '';
                 if (stickyBadge) stickyBadge.classList.remove('is-sticky');
+                // Re-measure immediately (no animation delay needed on resize)
+                if (stickyBadge && badgeWrapper) {
+                    badgeHeight = stickyBadge.offsetHeight;
+                    badgeOriginalTop = badgeWrapper.getBoundingClientRect().top + window.scrollY;
+                    badgeInitialized = true;
+                }
                 updateStickyBadge();
             });
 
