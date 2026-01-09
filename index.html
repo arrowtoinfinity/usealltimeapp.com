@@ -420,7 +420,7 @@
             display: inline-flex;
             align-items: center;
             gap: var(--space-sm);
-            padding: var(--space-sm) var(--space-lg) var(--space-sm) var(--space-sm);
+            padding: var(--space-sm) var(--space-sm);
             background: rgba(255,255,255,0.8);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -433,8 +433,18 @@
             animation: fadeInUp 0.8s ease forwards;
             opacity: 0;
             box-shadow: var(--shadow-md);
-            position: relative;
-            z-index: 10;
+            position: sticky;
+            top: 80px;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .hero-badge.is-sticky {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 0;
         }
 
         .hero-badge-icon {
@@ -486,6 +496,41 @@
         .badge-platform-list {
             font-size: var(--text-small);
             font-weight: 500;
+        }
+
+        /* Badge Toggle */
+        .badge-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .badge-toggle-btn {
+            background: none;
+            border: none;
+            padding: 4px 8px;
+            font-size: var(--text-small);
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s ease;
+            opacity: 0.5;
+        }
+
+        .badge-toggle-btn:hover {
+            opacity: 0.8;
+        }
+
+        .badge-toggle-btn.active {
+            opacity: 1;
+            background: rgba(0,0,0,0.08);
+        }
+
+        .badge-toggle-separator {
+            color: var(--text-secondary);
+            font-weight: 400;
+            opacity: 0.6;
         }
 
         .hero h1 {
@@ -651,35 +696,6 @@
             font-weight: 600;
         }
 
-        /* Platform Toggle in App Store Button */
-        .platform-option {
-            cursor: pointer;
-            opacity: 0.5;
-            transition: opacity 0.2s ease;
-        }
-
-        .platform-option:hover {
-            opacity: 0.8;
-        }
-
-        .platform-option.active {
-            opacity: 1;
-        }
-
-        .platform-separator {
-            opacity: 0.4;
-            margin: 0 4px;
-        }
-
-        /* Hide toggle part on mobile (shown via JS on desktop) */
-        .platform-toggle-part {
-            display: none;
-        }
-
-        .platform-toggle-part.show {
-            display: inline;
-        }
-
         /* Phone mockup */
         .hero-visual {
             margin-top: 4rem;
@@ -791,43 +807,6 @@
             color: var(--text-secondary);
             margin: 0;
             font-weight: 500;
-        }
-
-        /* Platform Toggle */
-        .platform-toggle {
-            display: flex;
-            justify-content: center;
-            margin: 1.5rem 0;
-        }
-
-        .platform-toggle-container {
-            display: inline-flex;
-            background: var(--color-gray-100);
-            border-radius: var(--radius-full);
-            padding: 4px;
-            gap: 4px;
-        }
-
-        .platform-toggle-btn {
-            padding: 0.5rem 1.25rem;
-            border: none;
-            background: transparent;
-            border-radius: var(--radius-full);
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .platform-toggle-btn.active {
-            background: var(--color-white);
-            color: var(--text-primary);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .platform-toggle-btn:hover:not(.active) {
-            color: var(--text-primary);
         }
 
         @keyframes fadeIn {
@@ -2496,11 +2475,16 @@
                 <div class="event-circle pending size-sm">✨</div>
             </div>
 
-            <div class="hero-badge">
+            <div class="hero-badge" id="sticky-badge">
                 <span class="hero-badge-icon">
                     <svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
                 </span>
-                <span class="badge-platform-primary">Available on iOS & macOS</span>
+                <span class="badge-platform-primary">Available on</span>
+                <div class="badge-toggle">
+                    <button class="badge-toggle-btn active" data-platform="ios">iOS</button>
+                    <span class="badge-toggle-separator">&</span>
+                    <button class="badge-toggle-btn" data-platform="macos">macOS</button>
+                </div>
             </div>
             
             <h1>Plan your <span class="cycling-word-container"><span class="cycling-word active" data-word="day">day.</span><span class="cycling-word" data-word="routines">routines.</span><span class="cycling-word" data-word="focus">focus.</span><span class="cycling-word" data-word="goals">goals.</span><span class="cycling-word" data-word="health">health.</span><span class="cycling-word" data-word="nutrition">nutrition.</span><span class="cycling-word" data-word="life">life.</span></span></h1>
@@ -2516,14 +2500,8 @@
                         <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
                     </svg>
                     <span>
-                        <span class="small">Download for</span><br>
-                        <span class="large">
-                            <span class="platform-option" data-platform="ios">iOS</span>
-                            <span class="platform-toggle-part">
-                                <span class="platform-separator">|</span>
-                                <span class="platform-option" data-platform="macos">macOS</span>
-                            </span>
-                        </span>
+                        <span class="small">Download on the</span><br>
+                        <span class="large">App Store</span>
                     </span>
                 </a>
             </div>
@@ -2532,13 +2510,6 @@
                 <div class="carousel-title">
                     <h3 class="carousel-main-title">Powerful Controls</h3>
                     <p class="carousel-subtitle">Effortlessly Precise</p>
-                </div>
-
-                <div class="platform-toggle">
-                    <div class="platform-toggle-container">
-                        <button class="platform-toggle-btn active" data-platform="ios">iOS</button>
-                        <button class="platform-toggle-btn" data-platform="macos">macOS</button>
-                    </div>
                 </div>
 
                 <div class="phone-carousel">
@@ -3009,14 +2980,8 @@
                         <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
                     </svg>
                     <span>
-                        <span class="small">Download for</span><br>
-                        <span class="large">
-                            <span class="platform-option" data-platform="ios">iOS</span>
-                            <span class="platform-toggle-part">
-                                <span class="platform-separator">|</span>
-                                <span class="platform-option" data-platform="macos">macOS</span>
-                            </span>
-                        </span>
+                        <span class="small">Download on the</span><br>
+                        <span class="large">App Store</span>
                     </span>
                 </a>
             </div>
@@ -3076,8 +3041,8 @@
                 }
             }
 
-            // Platform toggle functionality (for video carousel)
-            const platformToggleBtns = document.querySelectorAll('.platform-toggle-btn');
+            // Platform toggle functionality (badge toggle for video carousel)
+            const badgeToggleBtns = document.querySelectorAll('.badge-toggle-btn');
             let currentPlatform = 'ios';
 
             // Video paths for each platform (same for now, update when macOS videos ready)
@@ -3100,19 +3065,40 @@
                 ]
             };
 
-            platformToggleBtns.forEach(btn => {
+            badgeToggleBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const platform = btn.dataset.platform;
                     if (platform === currentPlatform) return;
 
                     // Update active state
-                    platformToggleBtns.forEach(b => b.classList.remove('active'));
+                    badgeToggleBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     currentPlatform = platform;
 
                     // Videos are the same for now, but structure is ready for different videos per platform
                 });
             });
+
+            // Sticky badge behavior
+            const stickyBadge = document.getElementById('sticky-badge');
+            let badgeOriginalTop = null;
+
+            function updateStickyBadge() {
+                if (!stickyBadge) return;
+
+                if (badgeOriginalTop === null) {
+                    badgeOriginalTop = stickyBadge.getBoundingClientRect().top + window.scrollY;
+                }
+
+                const scrollY = window.scrollY;
+                const headerHeight = 80;
+
+                if (scrollY > badgeOriginalTop - headerHeight) {
+                    stickyBadge.classList.add('is-sticky');
+                } else {
+                    stickyBadge.classList.remove('is-sticky');
+                }
+            }
 
             // Update gray timeline line to always reach the last circle
             function updateTimelineLineHeight() {
@@ -3224,6 +3210,7 @@
                         updateCenteredStep();
                         updateCenteredCard();
                         updateHeaderButtonVisibility();
+                        updateStickyBadge();
                         ticking = false;
                     });
                     ticking = true;
@@ -3236,6 +3223,8 @@
                 updateCenteredCard();
                 updateTimelineLineHeight();
                 updateHeaderButtonVisibility();
+                badgeOriginalTop = null; // Reset on resize
+                updateStickyBadge();
             });
 
             // Initial update
@@ -3243,6 +3232,7 @@
             updateCenteredCard();
             updateTimelineLineHeight();
             updateHeaderButtonVisibility();
+            updateStickyBadge();
 
             // GSAP Review Card Animations - Natural toss with inverted exit angle
             gsap.registerPlugin(MotionPathPlugin);
@@ -4180,65 +4170,29 @@
     </script>
 
     <script>
-        // Device detection and platform toggle
+        // App Store link management based on badge toggle
         document.addEventListener('DOMContentLoaded', function() {
             const appStoreLinks = {
                 ios: '#',   // TODO: Replace with actual iOS App Store URL
                 macos: '#'  // TODO: Replace with actual macOS App Store URL
             };
 
-            // Detect if user is on mobile (iPhone/iPad/Android)
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-            // Get all platform toggle parts and options
-            const toggleParts = document.querySelectorAll('.platform-toggle-part');
             const allButtons = document.querySelectorAll('.app-store-btn');
+            const badgeToggleBtns = document.querySelectorAll('.badge-toggle-btn');
 
-            if (isMobile) {
-                // Mobile: Show only iOS, hide toggle
-                toggleParts.forEach(part => part.classList.remove('show'));
-
-                // Change text to "Download on the App Store"
-                allButtons.forEach(btn => {
-                    const smallText = btn.querySelector('.small');
-                    const iosOption = btn.querySelector('.platform-option[data-platform="ios"]');
-                    if (smallText) smallText.textContent = 'Download on the';
-                    if (iosOption) iosOption.textContent = 'App Store';
-                    iosOption?.classList.add('active');
-                    btn.href = appStoreLinks.ios;
-                });
-            } else {
-                // Desktop: Show toggle with macOS pre-selected
-                toggleParts.forEach(part => part.classList.add('show'));
-
-                // Set macOS as active
-                document.querySelectorAll('.platform-option').forEach(opt => {
-                    opt.classList.toggle('active', opt.dataset.platform === 'macos');
-                });
-                allButtons.forEach(btn => {
-                    btn.href = appStoreLinks.macos;
-                });
-            }
-
-            // Platform toggle click handler (only works on desktop)
-            document.querySelectorAll('.platform-option').forEach(option => {
-                option.addEventListener('click', (e) => {
-                    if (isMobile) return; // No toggling on mobile
-
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const platform = option.dataset.platform;
-
-                    // Update all platform options
-                    document.querySelectorAll('.platform-option').forEach(opt => {
-                        opt.classList.toggle('active', opt.dataset.platform === platform);
-                    });
-
-                    // Update all button links
-                    allButtons.forEach(btn => {
-                        btn.href = appStoreLinks[platform];
+            // Update App Store links when badge toggle changes
+            badgeToggleBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const platform = btn.dataset.platform;
+                    allButtons.forEach(b => {
+                        b.href = appStoreLinks[platform];
                     });
                 });
+            });
+
+            // Set initial link to iOS (default active)
+            allButtons.forEach(btn => {
+                btn.href = appStoreLinks.ios;
             });
         });
     </script>
