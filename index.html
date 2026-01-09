@@ -185,8 +185,13 @@
             margin-left: 0;
         }
 
-        /* Hero Badge */
+        /* Hero Badge - Fixed below header */
         .hero-badge {
+            position: fixed;
+            top: 72px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 99;
             display: inline-flex;
             align-items: center;
             gap: var(--space-sm);
@@ -199,9 +204,6 @@
             font-size: var(--text-small);
             font-weight: 500;
             color: var(--text-secondary);
-            margin-bottom: 2rem;
-            animation: fadeInUp 0.8s ease forwards;
-            opacity: 0;
             box-shadow: var(--shadow-md);
         }
 
@@ -2149,10 +2151,7 @@
             }
 
             .hero-badge {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: var(--space-xs);
-                padding: var(--space-sm) var(--space-md);
+                display: none;
             }
 
             .hero-subtitle {
