@@ -651,6 +651,167 @@
             font-weight: 600;
         }
 
+        /* Button Variant Selector (for testing) */
+        .button-variant-selector {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--color-white);
+            padding: 12px 16px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            font-size: 0.85rem;
+            border: 1px solid var(--color-gray-200);
+        }
+
+        .button-variant-selector span {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .button-variant-selector button {
+            padding: 6px 12px;
+            border: 1px solid var(--color-gray-300);
+            background: var(--color-white);
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .button-variant-selector button:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .button-variant-selector button.active {
+            background: var(--color-primary);
+            border-color: var(--color-primary);
+            color: var(--color-white);
+        }
+
+        /* App Store Button Variants Container */
+        .app-store-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* Hide non-active variants */
+        .app-store-buttons.hidden {
+            display: none;
+        }
+
+        /* Variant A: Dual Buttons */
+        .dual-buttons .app-store-btn {
+            padding: 0.5rem 1rem;
+        }
+
+        .dual-buttons .app-store-btn svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .dual-buttons .app-store-btn .small {
+            font-size: 0.75rem;
+        }
+
+        .dual-buttons .app-store-btn .large {
+            font-size: 1.1rem;
+        }
+
+        /* Variant B: Dropdown Button */
+        .dropdown-button {
+            position: relative;
+        }
+
+        .dropdown-button .dropdown-trigger {
+            border: none;
+            font-family: inherit;
+        }
+
+        .dropdown-button .chevron {
+            width: 16px;
+            height: 16px;
+            margin-left: 4px;
+            transition: transform 0.2s ease;
+        }
+
+        .dropdown-button.open .chevron {
+            transform: rotate(180deg);
+        }
+
+        .platform-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--color-white);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            padding: 8px;
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+            z-index: 100;
+        }
+
+        .dropdown-button.open .platform-dropdown {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .platform-dropdown a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.15s ease;
+        }
+
+        .platform-dropdown a:hover {
+            background: var(--color-gray-100);
+        }
+
+        .platform-dropdown a span {
+            font-size: 1.2rem;
+        }
+
+        /* Variant C: Inline Toggle */
+        .inline-toggle .platform-option {
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.2s ease;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        .inline-toggle .platform-option:hover {
+            opacity: 0.8;
+        }
+
+        .inline-toggle .platform-option.active {
+            opacity: 1;
+        }
+
+        .inline-toggle .platform-separator {
+            opacity: 0.4;
+            margin: 0 2px;
+        }
+
         /* Phone mockup */
         .hero-visual {
             margin-top: 4rem;
@@ -2482,15 +2643,68 @@
             </p>
             
             <div class="hero-cta">
-                <a href="#" class="app-store-btn" id="hero-app-store-btn">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-                    </svg>
-                    <span>
-                        <span class="small">Download on the</span><br>
-                        <span class="large">App Store</span>
-                    </span>
-                </a>
+                <!-- Variant A: Dual Buttons -->
+                <div class="app-store-buttons dual-buttons" id="hero-dual-buttons">
+                    <a href="#" class="app-store-btn" data-platform="ios">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                        </svg>
+                        <span>
+                            <span class="small">Download for</span><br>
+                            <span class="large">iPhone</span>
+                        </span>
+                    </a>
+                    <a href="#" class="app-store-btn" data-platform="macos">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                        </svg>
+                        <span>
+                            <span class="small">Download for</span><br>
+                            <span class="large">Mac</span>
+                        </span>
+                    </a>
+                </div>
+
+                <!-- Variant B: Dropdown Button -->
+                <div class="app-store-buttons dropdown-button hidden" id="hero-dropdown-button">
+                    <button class="app-store-btn dropdown-trigger">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                        </svg>
+                        <span>
+                            <span class="small">Download on the</span><br>
+                            <span class="large">App Store</span>
+                        </span>
+                        <svg class="chevron" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M7 10l5 5 5-5z"/>
+                        </svg>
+                    </button>
+                    <div class="platform-dropdown">
+                        <a href="#" data-platform="ios">
+                            <span>📱</span> Download for iPhone
+                        </a>
+                        <a href="#" data-platform="macos">
+                            <span>💻</span> Download for Mac
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Variant C: Inline Toggle -->
+                <div class="app-store-buttons inline-toggle hidden" id="hero-inline-toggle">
+                    <a href="#" class="app-store-btn" id="hero-inline-btn">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                        </svg>
+                        <span>
+                            <span class="small">Download for</span><br>
+                            <span class="large">
+                                <span class="platform-option active" data-platform="ios">iOS</span>
+                                <span class="platform-separator">|</span>
+                                <span class="platform-option" data-platform="macos">macOS</span>
+                            </span>
+                        </span>
+                    </a>
+                </div>
             </div>
 
             <div class="hero-visual">
@@ -2969,15 +3183,69 @@
                 <div class="cta-icon"><span class="cta-emoji">🎯</span></div>
                 <h2>Ready to plan?</h2>
                 <p>Start transforming your daily routine today.</p>
-                <a href="#" class="app-store-btn" id="cta-app-store-btn">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-                    </svg>
-                    <span>
-                        <span class="small">Download on the</span><br>
-                        <span class="large">App Store</span>
-                    </span>
-                </a>
+
+                <!-- Variant A: Dual Buttons -->
+                <div class="app-store-buttons dual-buttons" id="cta-dual-buttons">
+                    <a href="#" class="app-store-btn" data-platform="ios">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                        </svg>
+                        <span>
+                            <span class="small">Download for</span><br>
+                            <span class="large">iPhone</span>
+                        </span>
+                    </a>
+                    <a href="#" class="app-store-btn" data-platform="macos">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                        </svg>
+                        <span>
+                            <span class="small">Download for</span><br>
+                            <span class="large">Mac</span>
+                        </span>
+                    </a>
+                </div>
+
+                <!-- Variant B: Dropdown Button -->
+                <div class="app-store-buttons dropdown-button hidden" id="cta-dropdown-button">
+                    <button class="app-store-btn dropdown-trigger">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                        </svg>
+                        <span>
+                            <span class="small">Download on the</span><br>
+                            <span class="large">App Store</span>
+                        </span>
+                        <svg class="chevron" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M7 10l5 5 5-5z"/>
+                        </svg>
+                    </button>
+                    <div class="platform-dropdown">
+                        <a href="#" data-platform="ios">
+                            <span>📱</span> Download for iPhone
+                        </a>
+                        <a href="#" data-platform="macos">
+                            <span>💻</span> Download for Mac
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Variant C: Inline Toggle -->
+                <div class="app-store-buttons inline-toggle hidden" id="cta-inline-toggle">
+                    <a href="#" class="app-store-btn" id="cta-inline-btn">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                        </svg>
+                        <span>
+                            <span class="small">Download for</span><br>
+                            <span class="large">
+                                <span class="platform-option active" data-platform="ios">iOS</span>
+                                <span class="platform-separator">|</span>
+                                <span class="platform-option" data-platform="macos">macOS</span>
+                            </span>
+                        </span>
+                    </a>
+                </div>
             </div>
         </section>
 
@@ -3015,16 +3283,16 @@
 
             // Header download button visibility
             const headerDownloadBtn = document.getElementById('header-download-btn');
-            const heroAppStoreBtn = document.getElementById('hero-app-store-btn');
-            const ctaAppStoreBtn = document.getElementById('cta-app-store-btn');
+            const heroCta = document.querySelector('.hero-cta');
+            const ctaButtons = document.getElementById('cta-dual-buttons');
 
             function updateHeaderButtonVisibility() {
-                if (!headerDownloadBtn || !heroAppStoreBtn || !ctaAppStoreBtn) return;
+                if (!headerDownloadBtn || !heroCta || !ctaButtons) return;
 
-                const heroRect = heroAppStoreBtn.getBoundingClientRect();
-                const ctaRect = ctaAppStoreBtn.getBoundingClientRect();
+                const heroRect = heroCta.getBoundingClientRect();
+                const ctaRect = ctaButtons.getBoundingClientRect();
 
-                // Show header button when hero button is above viewport AND cta button is below viewport
+                // Show header button when hero buttons are above viewport AND cta buttons are below viewport
                 const heroAboveViewport = heroRect.bottom < 0;
                 const ctaBelowViewport = ctaRect.top > window.innerHeight;
 
@@ -3035,15 +3303,9 @@
                 }
             }
 
-            // Platform toggle functionality
+            // Platform toggle functionality (for video carousel)
             const platformToggleBtns = document.querySelectorAll('.platform-toggle-btn');
             let currentPlatform = 'ios';
-
-            // App Store links for each platform
-            const appStoreLinks = {
-                ios: '#',   // TODO: Replace with actual iOS App Store URL
-                macos: '#'  // TODO: Replace with actual macOS App Store URL
-            };
 
             // Video paths for each platform (same for now, update when macOS videos ready)
             const platformVideos = {
@@ -3074,10 +3336,6 @@
                     platformToggleBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     currentPlatform = platform;
-
-                    // Update App Store button links
-                    if (heroAppStoreBtn) heroAppStoreBtn.href = appStoreLinks[platform];
-                    if (ctaAppStoreBtn) ctaAppStoreBtn.href = appStoreLinks[platform];
 
                     // Videos are the same for now, but structure is ready for different videos per platform
                 });
@@ -4146,6 +4404,111 @@
             }
         });
 
+    </script>
+
+    <!-- Button Variant Selector (for testing) -->
+    <div class="button-variant-selector">
+        <span>Button:</span>
+        <button data-variant="dual" class="active">Dual</button>
+        <button data-variant="dropdown">Dropdown</button>
+        <button data-variant="inline">Inline</button>
+    </div>
+
+    <script>
+        // Button variant switching
+        document.addEventListener('DOMContentLoaded', function() {
+            const variantButtons = document.querySelectorAll('.button-variant-selector button');
+            const appStoreLinks = {
+                ios: '#',   // TODO: Replace with actual iOS App Store URL
+                macos: '#'  // TODO: Replace with actual macOS App Store URL
+            };
+
+            // Variant IDs for hero and CTA sections
+            const variantIds = {
+                dual: ['hero-dual-buttons', 'cta-dual-buttons'],
+                dropdown: ['hero-dropdown-button', 'cta-dropdown-button'],
+                inline: ['hero-inline-toggle', 'cta-inline-toggle']
+            };
+
+            // Switch button variant
+            function switchVariant(variant) {
+                // Hide all variants
+                Object.values(variantIds).flat().forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.add('hidden');
+                });
+
+                // Show selected variant
+                variantIds[variant].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.remove('hidden');
+                });
+
+                // Update selector buttons
+                variantButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.variant === variant);
+                });
+            }
+
+            // Variant selector click handlers
+            variantButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    switchVariant(btn.dataset.variant);
+                });
+            });
+
+            // Dropdown toggle functionality
+            document.querySelectorAll('.dropdown-trigger').forEach(trigger => {
+                trigger.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const parent = trigger.closest('.dropdown-button');
+                    parent.classList.toggle('open');
+                });
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.dropdown-button')) {
+                    document.querySelectorAll('.dropdown-button.open').forEach(el => {
+                        el.classList.remove('open');
+                    });
+                }
+            });
+
+            // Dropdown link handlers
+            document.querySelectorAll('.platform-dropdown a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const platform = link.dataset.platform;
+                    window.open(appStoreLinks[platform], '_blank');
+                });
+            });
+
+            // Inline toggle functionality
+            document.querySelectorAll('.inline-toggle .platform-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const platform = option.dataset.platform;
+                    const container = option.closest('.inline-toggle');
+
+                    // Update active state
+                    container.querySelectorAll('.platform-option').forEach(opt => {
+                        opt.classList.toggle('active', opt.dataset.platform === platform);
+                    });
+
+                    // Update link href
+                    const link = container.querySelector('.app-store-btn');
+                    if (link) link.href = appStoreLinks[platform];
+                });
+            });
+
+            // Set up App Store links for dual buttons
+            document.querySelectorAll('.dual-buttons .app-store-btn').forEach(btn => {
+                const platform = btn.dataset.platform;
+                if (platform) btn.href = appStoreLinks[platform];
+            });
+        });
     </script>
 </body>
 </html>
