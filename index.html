@@ -1634,16 +1634,34 @@
         }
 
         .mac-screen {
-            background: #000;
+            background: #fff;
             border-radius: 8px 8px 0 0;
             overflow: hidden;
             aspect-ratio: 16/10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .mac-screen video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .mac-coming-soon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-lg);
+        }
+
+        .coming-soon-logo {
+            width: 120px;
+            height: 120px;
+            opacity: 0.8;
+        }
+
+        .coming-soon-text {
+            font-family: var(--font-display);
+            font-size: var(--text-xlarge);
+            font-weight: 600;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
         }
 
         .macos-cta {
@@ -1663,6 +1681,15 @@
 
             .mac-screen {
                 border-radius: 6px 6px 0 0;
+            }
+
+            .coming-soon-logo {
+                width: 80px;
+                height: 80px;
+            }
+
+            .coming-soon-text {
+                font-size: var(--text-large);
             }
         }
 
@@ -2920,7 +2947,10 @@
                 <div class="macos-visual">
                     <div class="mac-mockup">
                         <div class="mac-screen">
-                            <video src="videos/macos-preview.mp4" alt="Tiempo for macOS" preload="metadata" autoplay muted loop playsinline></video>
+                            <div class="mac-coming-soon">
+                                <img src="logo.png" alt="Tiempo Logo" class="coming-soon-logo">
+                                <p class="coming-soon-text">Coming Soon</p>
+                            </div>
                         </div>
                     </div>
                 </div>
