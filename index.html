@@ -1622,25 +1622,56 @@
 
         .macos-visual {
             margin-bottom: var(--space-xl);
+            padding-bottom: 20px;
         }
 
         .mac-mockup {
             max-width: 900px;
             margin: 0 auto;
-            background: #1a1a1a;
+            background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
             border-radius: 12px;
-            padding: 8px 8px 0;
-            box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+            padding: 8px;
+            box-shadow:
+                0 25px 80px rgba(0,0,0,0.3),
+                inset 0 1px 2px rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        .mac-mockup::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 5px;
+            background: #0a0a0a;
+            border-radius: 0 0 4px 4px;
+            z-index: 10;
+        }
+
+        .mac-mockup::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40%;
+            height: 12px;
+            background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
         .mac-screen {
-            background: #fff;
-            border-radius: 8px 8px 0 0;
+            background: #f5f5f5;
+            border-radius: 6px;
             overflow: hidden;
             aspect-ratio: 16/10;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
         }
 
         .mac-coming-soon {
@@ -1676,11 +1707,22 @@
 
             .mac-mockup {
                 border-radius: 8px;
-                padding: 4px 4px 0;
+                padding: 4px;
+            }
+
+            .mac-mockup::before {
+                width: 60px;
+                height: 4px;
+            }
+
+            .mac-mockup::after {
+                bottom: -8px;
+                height: 8px;
+                width: 35%;
             }
 
             .mac-screen {
-                border-radius: 6px 6px 0 0;
+                border-radius: 4px;
             }
 
             .coming-soon-logo {
