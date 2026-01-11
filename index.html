@@ -208,6 +208,11 @@
             transition: opacity 0.3s ease;
         }
 
+        .hero-badge.hidden {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
         .hero-badge-icon {
             width: 28px;
             height: 28px;
@@ -4120,33 +4125,27 @@
             const heroBadge = document.querySelector('.hero-badge');
             const heroBtn = document.getElementById('hero-app-store-btn');
 
-            if (!heroBadge || !heroBtn) return;
+            if (!heroBadge || !heroBtn) {
+                console.log('Badge elements not found:', { heroBadge, heroBtn });
+                return;
+            }
 
             function updateBadge() {
                 const btnRect = heroBtn.getBoundingClientRect();
+                const badgeBottom = 100 + heroBadge.offsetHeight;
 
-                // Badge top position
-                const badgeTop = 100;
-                const badgeBottom = badgeTop + heroBadge.offsetHeight;
-
-                // Download button position relative to viewport
-                const btnTop = btnRect.top;
-                const btnBottom = btnRect.bottom;
-
-                // Show badge if: button is below badge area OR button is completely off screen (scrolled past)
-                const btnBelowBadge = btnTop > badgeBottom + 50;
-                const btnGone = btnBottom < 0;
+                // Show if button is below badge OR button scrolled off top
+                const btnBelowBadge = btnRect.top > badgeBottom + 50;
+                const btnGone = btnRect.bottom < 0;
 
                 if (btnBelowBadge || btnGone) {
-                    heroBadge.style.opacity = '1';
-                    heroBadge.style.pointerEvents = 'auto';
+                    heroBadge.classList.remove('hidden');
                 } else {
-                    heroBadge.style.opacity = '0';
-                    heroBadge.style.pointerEvents = 'none';
+                    heroBadge.classList.add('hidden');
                 }
             }
 
-            window.addEventListener('scroll', updateBadge);
+            window.addEventListener('scroll', updateBadge, { passive: true });
             updateBadge();
         })();
     </script>
