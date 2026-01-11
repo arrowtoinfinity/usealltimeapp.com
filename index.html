@@ -187,8 +187,8 @@
 
         /* Hero Badge - Fixed below header */
         .hero-badge {
-            position: absolute;
-            top: 80px;
+            position: fixed;
+            top: 100px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 99;
@@ -205,6 +205,7 @@
             font-weight: 500;
             color: var(--text-secondary);
             box-shadow: var(--shadow-md);
+            transition: opacity 0.2s ease;
         }
 
         .hero-badge-icon {
@@ -318,7 +319,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 8rem 2rem 5rem;
+            padding: 11rem 2rem 5rem;
             position: relative;
             overflow: hidden;
         }
@@ -2147,11 +2148,11 @@
             }
 
             .hero {
-                padding: 8rem 1.5rem 3rem;
+                padding: 11rem 1.5rem 3rem;
             }
 
             .hero-badge {
-                top: 70px;
+                top: 100px;
             }
 
             .hero-subtitle {
@@ -4109,6 +4110,27 @@
             allButtons.forEach(btn => {
                 btn.href = appStoreLinks.ios;
             });
+
+            // Hide badge when it reaches the features section
+            const heroBadge = document.querySelector('.hero-badge');
+            const heroSection = document.querySelector('.hero');
+
+            if (heroBadge && heroSection) {
+                window.addEventListener('scroll', () => {
+                    const heroBottom = heroSection.getBoundingClientRect().bottom;
+                    const badgeHeight = heroBadge.offsetHeight;
+                    const badgeTop = 100; // Fixed top position of badge
+
+                    // Hide badge when hero bottom reaches the badge position
+                    if (heroBottom <= badgeTop + badgeHeight + 20) {
+                        heroBadge.style.opacity = '0';
+                        heroBadge.style.pointerEvents = 'none';
+                    } else {
+                        heroBadge.style.opacity = '1';
+                        heroBadge.style.pointerEvents = 'auto';
+                    }
+                });
+            }
         });
     </script>
 </body>
