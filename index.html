@@ -205,6 +205,7 @@
             font-weight: 500;
             color: var(--text-secondary);
             box-shadow: var(--shadow-md);
+            transition: opacity 0.2s ease;
         }
 
         .hero-badge-icon {
@@ -4110,27 +4111,23 @@
                 btn.href = appStoreLinks.ios;
             });
 
-            // Stop badge at hero section boundary
+            // Hide badge when it reaches the features section
             const heroBadge = document.querySelector('.hero-badge');
             const heroSection = document.querySelector('.hero');
 
             if (heroBadge && heroSection) {
-                const badgeTop = 100; // Fixed top position of badge
-
                 window.addEventListener('scroll', () => {
-                    const heroRect = heroSection.getBoundingClientRect();
+                    const heroBottom = heroSection.getBoundingClientRect().bottom;
                     const badgeHeight = heroBadge.offsetHeight;
-                    const stopPoint = badgeTop + badgeHeight + 20;
+                    const badgeTop = 100; // Fixed top position of badge
 
-                    // When hero bottom reaches the badge, switch to absolute positioning
-                    if (heroRect.bottom <= stopPoint) {
-                        heroBadge.style.position = 'absolute';
-                        heroBadge.style.top = 'auto';
-                        heroBadge.style.bottom = '20px';
+                    // Hide badge when hero bottom reaches the badge position
+                    if (heroBottom <= badgeTop + badgeHeight + 20) {
+                        heroBadge.style.opacity = '0';
+                        heroBadge.style.pointerEvents = 'none';
                     } else {
-                        heroBadge.style.position = 'fixed';
-                        heroBadge.style.top = badgeTop + 'px';
-                        heroBadge.style.bottom = 'auto';
+                        heroBadge.style.opacity = '1';
+                        heroBadge.style.pointerEvents = 'auto';
                     }
                 });
             }
