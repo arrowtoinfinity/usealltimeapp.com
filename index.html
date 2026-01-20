@@ -2493,18 +2493,8 @@
             font-weight: 400;
         }
 
-        .waitlist-input:focus {
-            border-color: transparent;
-            background: var(--color-white);
-            box-shadow: 0 4px 16px rgba(0, 122, 255, 0.15),
-                        0 0 0 3px rgba(0, 122, 255, 0.08),
-                        inset 0 0 0 2px var(--color-primary);
-            transform: translateY(-1px);
-        }
-
         .waitlist-input:invalid:not(:placeholder-shown) {
-            box-shadow: 0 4px 16px rgba(255, 59, 48, 0.12),
-                        inset 0 0 0 2px var(--color-danger);
+            color: var(--color-danger);
         }
 
         .waitlist-btn {
