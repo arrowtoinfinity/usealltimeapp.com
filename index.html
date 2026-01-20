@@ -2457,75 +2457,114 @@
 
         /* Waitlist Form Styles */
         .waitlist-container {
-            margin-top: 2rem;
+            margin: 2.5rem 0 2rem;
             width: 100%;
-            max-width: 400px;
+            max-width: 460px;
         }
 
         .waitlist-form {
             display: flex;
-            gap: var(--space-md);
+            gap: 0.75rem;
             width: 100%;
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 16px;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
         .waitlist-input {
             flex: 1;
-            padding: var(--space-md) var(--space-lg);
+            padding: 14px 18px;
             font-family: var(--font-body);
             font-size: 1rem;
             color: var(--text-primary);
             background: var(--color-white);
-            border: 2px solid var(--color-gray-200);
-            border-radius: var(--radius-md);
+            border: 2px solid transparent;
+            border-radius: 12px;
             outline: none;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
         .waitlist-input::placeholder {
-            color: var(--text-secondary);
+            color: var(--text-tertiary);
+            font-weight: 400;
         }
 
         .waitlist-input:focus {
-            border-color: var(--color-primary);
-            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+            border-color: transparent;
+            background: var(--color-white);
+            box-shadow: 0 4px 16px rgba(0, 122, 255, 0.15),
+                        0 0 0 3px rgba(0, 122, 255, 0.08),
+                        inset 0 0 0 2px var(--color-primary);
+            transform: translateY(-1px);
         }
 
         .waitlist-input:invalid:not(:placeholder-shown) {
-            border-color: var(--color-danger);
+            box-shadow: 0 4px 16px rgba(255, 59, 48, 0.12),
+                        inset 0 0 0 2px var(--color-danger);
         }
 
         .waitlist-btn {
+            position: relative;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: var(--space-md) var(--space-2xl);
-            background: var(--color-primary);
+            padding: 14px 28px;
+            background: var(--gradient-sunrise);
             color: var(--color-white);
             font-family: var(--font-body);
             font-size: 1rem;
             font-weight: 600;
             border: none;
-            border-radius: var(--radius-md);
+            border-radius: 12px;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-            box-shadow: var(--shadow-md);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25),
+                        0 2px 4px rgba(0, 0, 0, 0.1);
             white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .waitlist-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.1) 50%,
+                rgba(255, 255, 255, 0) 100%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .waitlist-btn:hover::before {
+            transform: translateX(100%);
         }
 
         .waitlist-btn:hover {
-            transform: scale(1.02);
-            box-shadow: var(--shadow-lg);
-            background: #0066DD;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 24px rgba(0, 122, 255, 0.35),
+                        0 4px 8px rgba(0, 0, 0, 0.15);
         }
 
         .waitlist-btn:active {
-            transform: scale(0.98);
+            transform: translateY(0) scale(0.98);
+            box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
         }
 
         .waitlist-btn:disabled {
             background: var(--color-gray-400);
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
+        }
+
+        .waitlist-btn:disabled::before {
+            display: none;
         }
 
         .waitlist-success {
@@ -2569,14 +2608,24 @@
 
         /* Responsive: Stack vertically on mobile */
         @media (max-width: 480px) {
+            .waitlist-container {
+                margin: 2rem 0 1.5rem;
+                max-width: 100%;
+            }
+
             .waitlist-form {
                 flex-direction: column;
-                gap: var(--space-md);
+                gap: 0.75rem;
+                padding: 6px;
+            }
+
+            .waitlist-input {
+                padding: 16px 18px;
             }
 
             .waitlist-btn {
                 width: 100%;
-                padding: var(--space-lg) var(--space-2xl);
+                padding: 16px 28px;
             }
         }
 
