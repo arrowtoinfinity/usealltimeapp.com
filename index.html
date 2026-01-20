@@ -2476,7 +2476,7 @@
 
         .waitlist-input {
             width: 100%;
-            padding: 14px 60px 14px 18px;
+            padding: 14px 50px 14px 18px;
             font-family: var(--font-body);
             font-size: 1rem;
             color: var(--text-primary);
@@ -2513,39 +2513,30 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 44px;
-            height: 44px;
+            width: 36px;
+            height: 36px;
             padding: 0;
             background: var(--color-gray-400);
             color: var(--color-white);
             border: none;
             border-radius: 50%;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+            transition: background-color 0.2s ease;
         }
 
         .waitlist-btn svg {
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
         }
 
-        .waitlist-btn:hover {
-            background: var(--text-secondary);
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
-        }
-
-        .waitlist-btn:active {
-            transform: scale(0.95);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+        .waitlist-btn.ready {
+            background: var(--color-primary);
+            cursor: pointer;
         }
 
         .waitlist-btn:disabled {
             background: var(--color-gray-200);
             cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
         }
 
         .waitlist-success {
@@ -2601,13 +2592,18 @@
             }
 
             .waitlist-input {
-                padding: 14px 54px 14px 16px;
+                padding: 14px 46px 14px 16px;
             }
 
             .waitlist-btn {
                 right: 8px;
-                width: 40px;
-                height: 40px;
+                width: 32px;
+                height: 32px;
+            }
+
+            .waitlist-btn svg {
+                width: 14px;
+                height: 14px;
             }
         }
 
@@ -2766,8 +2762,10 @@
             emailInput.addEventListener('input', function() {
                 if (emailInput.validity.valid && emailInput.value.length > 0) {
                     submitBtn.disabled = false;
-                } else if (emailInput.value.length > 0) {
-                    submitBtn.disabled = !emailInput.validity.valid;
+                    submitBtn.classList.add('ready');
+                } else {
+                    submitBtn.disabled = true;
+                    submitBtn.classList.remove('ready');
                 }
             });
         })();
