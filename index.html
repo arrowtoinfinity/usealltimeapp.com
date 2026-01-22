@@ -247,44 +247,22 @@
         .hero-badge .badge-nav-link {
             font-size: var(--text-small);
             font-weight: 600;
-            color: var(--text-secondary);
+            color: var(--text-primary);
             text-decoration: none;
             cursor: pointer;
             padding: 4px 8px;
-            transition: all 0.2s ease;
-            position: relative;
+            transition: color 0.3s ease;
         }
 
-        /* Link Hover State */
-        .hero-badge .badge-nav-link:hover {
-            color: var(--text-primary);
+        /* Subtle blue flash animation on click */
+        @keyframes blueFlash {
+            0% { color: var(--text-primary); }
+            50% { color: var(--color-primary); }
+            100% { color: var(--text-primary); }
         }
 
-        /* Active Link State */
-        .hero-badge .badge-nav-link.active {
-            color: var(--text-primary);
-            font-weight: 700;
-        }
-
-        /* Underline Animation */
-        .hero-badge .badge-nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 8px;
-            right: 8px;
-            height: 2px;
-            background: var(--text-primary);
-            opacity: 0;
-            transition: opacity 0.2s ease;
-        }
-
-        .hero-badge .badge-nav-link:hover::after {
-            opacity: 0.3;
-        }
-
-        .hero-badge .badge-nav-link.active::after {
-            opacity: 1;
+        .hero-badge .badge-nav-link.flash {
+            animation: blueFlash 0.6s ease;
         }
 
         /* Dot Separator */
@@ -3524,6 +3502,10 @@
                     const platform = link.dataset.platform;
                     if (platform === currentPlatform) return;
 
+                    // Add blue flash animation
+                    link.classList.add('flash');
+                    setTimeout(() => link.classList.remove('flash'), 600);
+
                     // Update active state
                     badgeNavLinks.forEach(l => l.classList.remove('active'));
                     link.classList.add('active');
@@ -4617,6 +4599,10 @@
 
                     const platform = link.dataset.platform;
                     const targetId = link.getAttribute('href');
+
+                    // Add blue flash animation
+                    link.classList.add('flash');
+                    setTimeout(() => link.classList.remove('flash'), 600);
 
                     // Update active state in badge navigation
                     badgeNavLinks.forEach(l => l.classList.remove('active'));
