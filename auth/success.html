@@ -37,12 +37,23 @@
             --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
 
             /* Shadows */
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
             --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
             --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
 
+            /* Spacing */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 12px;
+            --space-lg: 16px;
+            --space-xl: 20px;
+            --space-2xl: 24px;
+
             /* Border radius */
+            --radius-sm: 10px;
             --radius-md: 12px;
             --radius-lg: 16px;
+            --radius-xl: 20px;
             --radius-full: 9999px;
         }
 
@@ -52,50 +63,140 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: var(--font-body);
             background: var(--color-white);
+            color: var(--text-primary);
+            line-height: 1.6;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--color-gray-200);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .logo-text {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        nav {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        nav a {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        nav a:hover {
+            color: var(--text-primary);
+        }
+
+        /* Button */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: var(--space-md) var(--space-xl);
+            background: var(--color-primary);
+            color: var(--color-white);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
+            color: var(--color-white);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        nav .btn {
+            border-radius: var(--radius-full);
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--text-primary);
+            padding: 120px 20px 40px;
         }
 
         .container {
             text-align: center;
-            padding: 40px;
             max-width: 420px;
         }
 
-        .logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 24px;
+        .wordmark {
+            margin-bottom: 32px;
         }
 
-        .logo img {
+        .wordmark img {
+            height: 40px;
+            width: auto;
+        }
+
+        .success-image {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 32px;
+        }
+
+        .success-image img {
             width: 100%;
             height: 100%;
             object-fit: contain;
-        }
-
-        .icon {
-            width: 64px;
-            height: 64px;
-            background: var(--color-success);
-            border-radius: var(--radius-lg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 24px;
-            box-shadow: var(--shadow-md);
-        }
-
-        .icon svg {
-            width: 32px;
-            height: 32px;
-            fill: white;
         }
 
         h1 {
@@ -107,36 +208,11 @@
             letter-spacing: -0.02em;
         }
 
-        p {
+        .description {
             font-size: 1rem;
             color: var(--text-secondary);
             line-height: 1.6;
             margin-bottom: 32px;
-        }
-
-        .button {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: var(--color-primary);
-            color: white;
-            text-decoration: none;
-            padding: 14px 28px;
-            border-radius: var(--radius-md);
-            font-family: var(--font-body);
-            font-size: 1rem;
-            font-weight: 600;
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
-            box-shadow: var(--shadow-md);
-        }
-
-        .button:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .button:active {
-            transform: translateY(0) scale(0.98);
         }
 
         .subtitle {
@@ -146,6 +222,7 @@
             line-height: 1.5;
         }
 
+        /* Loading State */
         .spinner {
             width: 32px;
             height: 32px;
@@ -173,62 +250,130 @@
             display: none;
         }
 
-        /* Footer link back to website */
-        .footer-link {
-            margin-top: 48px;
-            padding-top: 24px;
+        /* Footer */
+        footer {
+            padding: 3rem 2rem;
             border-top: 1px solid var(--color-gray-200);
         }
 
-        .footer-link a {
-            font-size: 0.875rem;
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            font-size: 0.9rem;
             color: var(--text-secondary);
             text-decoration: none;
             transition: color 0.2s ease;
         }
 
-        .footer-link a:hover {
+        .footer-links a:hover {
             color: var(--color-primary);
+        }
+
+        .footer-copy {
+            font-size: 0.85rem;
+            color: var(--text-tertiary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem 1.5rem;
+            }
+
+            nav {
+                display: none;
+            }
+
+            main {
+                padding: 100px 20px 40px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1rem 2rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Loading state (shown briefly) -->
-        <div id="loading">
-            <div class="logo">
-                <img src="/logo.png" alt="Tiempo">
+    <header>
+        <a href="/" class="logo">
+            <img src="/logo.png" alt="Tiempo Logo">
+            <span class="logo-text">Tiempo</span>
+        </a>
+        <nav>
+            <a href="/#features">Features</a>
+            <a href="/faq">FAQ</a>
+            <a href="https://apps.apple.com/app/tiempo-ai-daily-planner/id6738964879" class="btn" target="_blank">Download</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Loading state (shown briefly) -->
+            <div id="loading">
+                <div class="wordmark">
+                    <img src="wordmark.png" alt="Tiempo">
+                </div>
+                <div class="spinner"></div>
+                <p class="loading-text">Opening Tiempo...</p>
             </div>
-            <div class="spinner"></div>
-            <p class="loading-text">Opening Tiempo...</p>
+
+            <!-- Success state -->
+            <div id="success">
+                <div class="wordmark">
+                    <img src="wordmark.png" alt="Tiempo">
+                </div>
+
+                <div class="success-image">
+                    <img src="success-clock.png" alt="Success">
+                </div>
+
+                <h1>Email Confirmed!</h1>
+                <p class="description">Your email has been verified successfully. You can now sign in to Tiempo.</p>
+
+                <a href="com.usetiempoapp.tiempo://auth/callback" class="btn" id="openApp">
+                    Open Tiempo
+                </a>
+
+                <p class="subtitle">If the app doesn't open automatically,<br>tap the button above.</p>
+            </div>
         </div>
+    </main>
 
-        <!-- Success state -->
-        <div id="success">
-            <div class="logo">
-                <img src="/logo.png" alt="Tiempo">
-            </div>
-
-            <div class="icon">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                </svg>
-            </div>
-
-            <h1>Email Confirmed!</h1>
-            <p>Your email has been verified successfully. You can now sign in to Tiempo.</p>
-
-            <a href="com.usetiempoapp.tiempo://auth/callback" class="button" id="openApp">
-                Open Tiempo
+    <footer>
+        <div class="footer-content">
+            <a href="/" class="logo">
+                <img src="/wordmark.png" alt="Tiempo" style="height: 32px;">
             </a>
-
-            <p class="subtitle">If the app doesn't open automatically,<br>tap the button above.</p>
-
-            <div class="footer-link">
-                <a href="https://usetiempoapp.com">Back to usetiempoapp.com</a>
+            <div class="footer-links">
+                <a href="/faq">FAQ</a>
+                <a href="/privacy">Privacy</a>
+                <a href="/terms">Terms</a>
+                <a href="/support">Support</a>
             </div>
+            <p class="footer-copy">&copy; 2026 Tiempo. All rights reserved.</p>
         </div>
-    </div>
+    </footer>
 
     <script>
         // Get any tokens from URL hash (Supabase passes them in fragment)
