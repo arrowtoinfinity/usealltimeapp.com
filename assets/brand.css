@@ -10,6 +10,12 @@
   --font-brand: "HelveticaNeueCondensedBlack", "Helvetica Neue Condensed Black", "Helvetica Neue", "Arial Narrow", "Arial Black", sans-serif;
 }
 
+/* New sunrise icons have more transparent padding, so increase rendered height to match original Tiempo visual size. */
+header .logo img {
+  height: 49px !important;
+  width: auto;
+}
+
 html[data-brand="alltime"] .brand-wordmark-text {
   font-family: var(--font-brand) !important;
   font-weight: 900 !important;
