@@ -32,3 +32,9 @@ html[data-brand="alltime"] .brand-wordmark-text {
 .brand-toggle-link:hover {
   color: #1C1C1E;
 }
+
+/* Safety override: never show brand switch links in footer. */
+.footer-links .brand-toggle-link,
+.footer-links [data-brand-toggle="1"] {
+  display: none !important;
+}
