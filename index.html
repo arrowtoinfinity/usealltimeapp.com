@@ -1246,6 +1246,8 @@
 
         /* Event Bubble Card style for features */
         .feature-card {
+            background: color-mix(in srgb, var(--card-color) 15%, transparent);
+            border: 2px dashed color-mix(in srgb, var(--card-color) 40%, transparent);
             border-radius: var(--radius-md);
             padding: var(--space-lg) var(--space-xl);
             transition: border-color 0.2s ease-out, background 0.2s ease-out;
@@ -1253,19 +1255,10 @@
             overflow: visible;
         }
 
-        .feature-card:not(.parent-container) {
-            background: var(--card-fill);
-            border: 2px solid var(--card-border);
-        }
-
-        .feature-card:not(.parent-container):hover {
+        .feature-card:hover,
+        .feature-card.centered {
             background: color-mix(in srgb, var(--card-color) 25%, transparent);
             border: 2px solid color-mix(in srgb, var(--card-color) 80%, transparent);
-        }
-
-        .feature-card:not(.parent-container).centered {
-            background: var(--card-fill);
-            border: 2px solid var(--card-border);
         }
 
         /* Resize handles - visible on hover, positioned on edges */
@@ -1303,12 +1296,12 @@
         }
 
         /* Card colors - subtle light (top) to dark (bottom) gradient */
-        .feature-card:nth-child(1) { --card-color: #f26522; --card-color-light: #f8935e; --card-fill: #f9b28d; --card-border: #ef8b58; } /* Dynamic Calendar - orange */
-        .feature-card:nth-child(2) { --card-color: #f9ed32; --card-color-light: #fcf570; --card-fill: #fff28a; --card-border: #f2de57; } /* Habit Tracking - yellow */
-        .feature-card:nth-child(3) { --card-color: #34C759; --card-color-light: #6fdb8a; --card-fill: #9be6ac; --card-border: #62ce7e; } /* Health Goals - green */
-        .feature-card:nth-child(4) { --card-color: #AF52DE; --card-color-light: #c98aeb; --card-fill: #d2a3ea; --card-border: #bc7fe0; } /* AI Productivity - purple */
-        .feature-card:nth-child(5) { --card-color: #ec008c; --card-color-light: #f54db0; --card-fill: #f7a1cf; --card-border: #ea59ab; } /* Cycle Tracking - magenta */
-        .feature-card:nth-child(6) { --card-color: #007AFF; --card-color-light: #4da3ff; --card-fill: #a6ceff; --card-border: #62aaf8; } /* Powerful Insights - blue */
+        .feature-card:nth-child(1) { --card-color: #f26522; --card-color-light: #f8935e; } /* Dynamic Calendar - orange */
+        .feature-card:nth-child(2) { --card-color: #f9ed32; --card-color-light: #fcf570; } /* Habit Tracking - yellow */
+        .feature-card:nth-child(3) { --card-color: #34C759; --card-color-light: #6fdb8a; } /* Health Goals - green */
+        .feature-card:nth-child(4) { --card-color: #AF52DE; --card-color-light: #c98aeb; } /* AI Productivity - purple */
+        .feature-card:nth-child(5) { --card-color: #ec008c; --card-color-light: #f54db0; } /* Cycle Tracking - magenta */
+        .feature-card:nth-child(6) { --card-color: #007AFF; --card-color-light: #4da3ff; } /* Powerful Insights - blue */
 
         /* Event circle-style icons */
         .feature-icon {
@@ -1430,23 +1423,18 @@
             align-items: flex-start;
             gap: var(--space-sm);
             padding: var(--space-md);
-            background: #d2a3ea;
-            border: 2px solid #bc7fe0;
+            background: rgba(175, 82, 222, 0.15);
+            border: 2px dashed rgba(175, 82, 222, 0.4);
             border-radius: 8px;
             position: relative;
             transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
             pointer-events: auto;
         }
 
-        .child-events .child-event:hover {
+        .child-events .child-event:hover,
+        .child-events .child-event.centered {
             background: rgba(175, 82, 222, 0.25);
             border: 2px solid rgba(175, 82, 222, 0.8);
-            transform: scale(1.02);
-        }
-
-        .child-events .child-event.centered {
-            background: #d2a3ea;
-            border: 2px solid #bc7fe0;
             transform: scale(1.02);
         }
 
