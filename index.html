@@ -1664,6 +1664,16 @@
             position: relative;
         }
 
+        .mac-screen {
+            clip-path: inset(50% 0 50% 0);
+            transition: clip-path 0s;
+        }
+
+        .mac-screen.tv-on {
+            clip-path: inset(0 0 0 0);
+            transition: clip-path 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
         .mac-screen::before {
             content: '';
             position: absolute;
@@ -3309,6 +3319,31 @@
                 }, { threshold: 0.15, rootMargin: '-80px 0px' });
 
                 if (fGrid) fObserver.observe(fGrid);
+            })();
+
+            // Mac screen TV turn-on animation
+            (function() {
+                var macScreen = document.querySelector('.mac-screen');
+                if (!macScreen) return;
+
+                // If already scrolled past, show immediately
+                if (macScreen.getBoundingClientRect().bottom < window.innerHeight) {
+                    macScreen.classList.add('tv-on');
+                    return;
+                }
+
+                var macObserver = new IntersectionObserver(function(entries) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            setTimeout(function() {
+                                macScreen.classList.add('tv-on');
+                            }, 200);
+                            macObserver.disconnect();
+                        }
+                    });
+                }, { threshold: 0.3 });
+
+                macObserver.observe(macScreen);
             })();
 
             // GSAP Review Card Animations - Natural toss with inverted exit angle
