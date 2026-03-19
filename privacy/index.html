@@ -295,7 +295,10 @@
         }
 
         .toc {
-            background: var(--color-background);
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 12px;
             padding: 1.5rem 2rem;
             margin-bottom: 2rem;
@@ -332,7 +335,10 @@
         }
 
         .summary-box {
-            background: var(--color-background);
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 12px;
             padding: 1.5rem 2rem;
             margin: 1.5rem 0;
@@ -449,6 +455,12 @@
 
         body.dark-mode .page-frost {
             background: rgba(28, 28, 30, 0.55);
+        }
+
+        body.dark-mode .toc,
+        body.dark-mode .summary-box {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.12);
         }
     </style>
 </head>
