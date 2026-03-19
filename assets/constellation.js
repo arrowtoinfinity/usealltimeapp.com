@@ -1,344 +1,354 @@
-// Constellation Network Animation
-// Slow drifting nodes with dynamic connections
-// Blue flash on new connections — adapted for AllTime
+// Gradient Orbs Background Animation
+// Scroll-driven color transitions per section + dark mode toggle
+// Large, soft, blurred orbs with slow orbital drift
 
 (function() {
     const canvas = document.getElementById('constellation-bg');
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
+    const isMobile = () => window.innerWidth < 768;
 
-    // Configuration
-    const config = {
-        nodeCount: window.innerWidth < 768 ? 50 : 90,
-        connectionDistance: 150,
-        scrollDepthMultiplier: 1.2,
-        driftSpeed: 0.25
+    // Hero palettes per cycling word (matched to gradient text colors)
+    var heroWordPalettes = {
+        day:       [[0, 122, 255, 0.6],   [175, 82, 222, 0.5],  [236, 0, 140, 0.5],  [120, 60, 200, 0.5],  [0, 122, 255, 0.4],  [175, 82, 222, 0.45]],
+        routines:  [[52, 199, 89, 0.6],   [48, 209, 88, 0.5],   [249, 237, 50, 0.5], [52, 199, 89, 0.5],   [249, 237, 50, 0.4], [48, 209, 88, 0.45]],
+        focus:     [[88, 86, 214, 0.6],   [0, 122, 255, 0.5],   [52, 199, 89, 0.5],  [88, 86, 214, 0.5],   [0, 122, 255, 0.4],  [52, 199, 89, 0.45]],
+        goals:     [[255, 149, 0, 0.6],   [255, 59, 48, 0.5],   [236, 0, 140, 0.5],  [255, 149, 0, 0.5],   [255, 59, 48, 0.4],  [236, 0, 140, 0.45]],
+        health:    [[28, 117, 188, 0.6],  [52, 199, 89, 0.5],   [129, 199, 132, 0.5],[28, 117, 188, 0.5],  [52, 199, 89, 0.4],  [129, 199, 132, 0.45]],
+        nutrition: [[255, 149, 0, 0.6],   [242, 101, 34, 0.5],  [249, 237, 50, 0.5], [255, 149, 0, 0.5],   [242, 101, 34, 0.4], [249, 237, 50, 0.45]],
+        life:      [[236, 0, 140, 0.6],   [242, 101, 34, 0.5],  [249, 237, 50, 0.5], [236, 0, 140, 0.5],   [242, 101, 34, 0.4], [249, 237, 50, 0.45]],
     };
 
-    let nodes = [];
-    let scrollY = 0;
-    let targetScrollY = 0;
-    let pageHeight = 0;
-    let activeConnections = new Set();
-    let flashingConnections = new Map();
-    let currentDriftSpeed = 1;
-    let targetDriftSpeed = 1;
-    let resizeTimeout = null;
-    let lastWidth = 0;
-    let lastHeight = 0;
-    let mouseX = -1000;
-    let mouseY = -1000;
+    var currentHeroWord = 'day';
+
+    // Color palettes per section: [r, g, b, opacity] per orb
+    const palettes = {
+        hero: heroWordPalettes.day,
+        features: [
+            [0, 0, 0, 0.5],
+            [10, 10, 15, 0.5],
+            [0, 0, 0, 0.4],
+            [5, 5, 10, 0.5],
+            [0, 0, 0, 0.4],
+            [10, 10, 15, 0.45],
+        ],
+        macos: [
+            [28, 117, 188, 0.7],
+            [175, 82, 222, 0.6],
+            [236, 0, 140, 0.6],
+            [242, 101, 34, 0.6],
+            [249, 237, 50, 0.5],
+            [28, 117, 188, 0.55],
+        ],
+        howItWorks: [
+            [28, 117, 188, 0.7],
+            [175, 82, 222, 0.6],
+            [236, 0, 140, 0.6],
+            [242, 101, 34, 0.6],
+            [249, 237, 50, 0.5],
+            [175, 82, 222, 0.55],
+        ],
+        cta: [
+            [0, 70, 200, 0.6],
+            [28, 117, 188, 0.5],
+            [0, 122, 255, 0.5],
+            [90, 160, 220, 0.5],
+            [0, 90, 170, 0.5],
+            [28, 117, 188, 0.45],
+        ],
+    };
+
+    const orbDefs = [
+        { cx: 0.20, cy: 0.25, size: 0.55, orbitR: 160, period: 18   },
+        { cx: 0.70, cy: 0.35, size: 0.50, orbitR: 140, period: 15   },
+        { cx: 0.15, cy: 0.70, size: 0.52, orbitR: 180, period: 21   },
+        { cx: 0.80, cy: 0.60, size: 0.48, orbitR: 130, period: 13.5 },
+        { cx: 0.50, cy: 0.15, size: 0.45, orbitR: 150, period: 19   },
+        { cx: 0.40, cy: 0.50, size: 0.48, orbitR: 145, period: 16.5 },
+    ];
+
+    let orbs = [];
+    let mouseX = -9999;
+    let mouseY = -9999;
     let mouseActive = false;
+    let resizeTimeout = null;
+    let startTime = performance.now() / 1000;
+    let sectionPositions = [];
+    let currentZone = 'hero';
 
-    // Mouse repulsion config
-    const mouseConfig = {
-        clearRadius: 180,
-        pushStrength: 0.25
-    };
+    const lerpSpeed = 0.025;
+    var transitionTime = 0; // timestamp when zone last changed
+    var orbTransitionDelays = []; // per-orb delay in seconds
+    var lastScrollY = 0;
 
-    // Flash color — AllTime brand blue
-    const flashColor = { r: 0, g: 122, b: 255 };
+    function cacheSections() {
+        const defs = [
+            { sel: '.hero', palette: 'hero' },
+            { sel: '#features', palette: 'features' },
+            { sel: '#macos-hero', palette: 'macos' },
+            { sel: '.how-it-works', palette: 'howItWorks' },
+            { sel: '.cta-section', palette: 'cta' },
+        ];
+        sectionPositions = [];
+        defs.forEach(function(d) {
+            var el = document.querySelector(d.sel);
+            if (el) {
+                sectionPositions.push({
+                    top: el.offsetTop,
+                    bottom: el.offsetTop + el.offsetHeight,
+                    palette: d.palette,
+                });
+            }
+        });
+    }
 
-    // Resize canvas (no node regeneration)
+    function getActiveZone() {
+        var scrollCenter = window.scrollY + window.innerHeight / 2;
+        for (var i = sectionPositions.length - 1; i >= 0; i--) {
+            if (scrollCenter >= sectionPositions[i].top) {
+                return sectionPositions[i].palette;
+            }
+        }
+        return 'hero';
+    }
+
+    function buildOrbs() {
+        var w = canvas.width;
+        var h = canvas.height;
+        var mobile = isMobile();
+        var minDim = Math.min(w, h);
+        var initPalette = palettes[currentZone] || palettes.hero;
+
+        orbs = orbDefs.map(function(def, i) {
+            if (mobile && i >= 3) return null;
+
+            var radius = (mobile ? def.size * 1.1 : def.size) * minDim;
+            var col = initPalette[i];
+            return {
+                baseX: def.cx * w,
+                baseY: def.cy * h,
+                radius: Math.max(radius, 150),
+                currentColor: [col[0], col[1], col[2]],
+                currentOpacity: col[3],
+                orbitR: mobile ? def.orbitR * 0.6 : def.orbitR,
+                period: def.period,
+                phase: i * 1.3,
+                displaceX: 0,
+                displaceY: 0,
+                index: i,
+            };
+        }).filter(Boolean);
+    }
+
     function resizeCanvas() {
-        const oldWidth = canvas.width || window.innerWidth;
-        const oldPageHeight = pageHeight || document.documentElement.scrollHeight;
-
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        pageHeight = document.documentElement.scrollHeight;
-
-        if (nodes.length > 0 && oldWidth > 0 && oldPageHeight > 0) {
-            const scaleX = canvas.width / oldWidth;
-            const scaleY = pageHeight / oldPageHeight;
-
-            nodes.forEach(node => {
-                node.baseX *= scaleX;
-                node.baseY *= scaleY;
-            });
-        }
     }
 
-    // Debounced resize handler
     function handleResize() {
-        resizeCanvas();
-
         clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-            const isMobile = window.innerWidth < 768;
-            const wasMobile = lastWidth < 768;
-
-            if (isMobile !== wasMobile && lastWidth > 0) {
-                initNodes();
-            }
-
-            lastWidth = window.innerWidth;
-            lastHeight = window.innerHeight;
-        }, 250);
+        resizeTimeout = setTimeout(function() {
+            resizeCanvas();
+            buildOrbs();
+            cacheSections();
+        }, 150);
     }
 
-    // Initialize nodes spread across entire page height
-    function initNodes() {
-        nodes = [];
-        const count = window.innerWidth < 768 ? 50 : 90;
+    // Blue shades for CTA cycling
+    var blueShades = [
+        [0, 70, 200],
+        [28, 117, 188],
+        [0, 122, 255],
+        [90, 160, 220],
+        [0, 90, 170],
+        [50, 140, 210],
+        [10, 80, 180],
+    ];
 
-        for (let i = 0; i < count; i++) {
-            const depth = Math.random();
-            const speedMultiplier = 0.5 + depth * 1.5;
+    function lerpColors() {
+        var targetPalette = palettes[currentZone] || palettes.hero;
+        var now = performance.now() / 1000;
+        var elapsed = now - transitionTime;
 
-            nodes.push({
-                baseX: Math.random() * canvas.width,
-                baseY: Math.random() * pageHeight,
-                vx: (Math.random() - 0.5) * config.driftSpeed * speedMultiplier,
-                vy: (Math.random() - 0.5) * config.driftSpeed * speedMultiplier,
-                z: depth,
-                size: 2 + depth * depth * (20 + Math.random() * 35),
-                opacity: 0.08 + depth * 0.42
-            });
-        }
+        orbs.forEach(function(orb) {
+            var target;
 
-        nodes.sort((a, b) => a.z - b.z);
-    }
-
-    // Update node positions (drift + mouse repulsion)
-    function updateNodes() {
-        targetDriftSpeed = 1;
-        currentDriftSpeed += (targetDriftSpeed - currentDriftSpeed) * 0.05;
-
-        nodes.forEach(node => {
-            // Normal drifting
-            node.baseX += node.vx * currentDriftSpeed;
-            node.baseY += node.vy * currentDriftSpeed;
-
-            // Mouse repulsion
-            if (mouseActive) {
-                const parallaxStrength = 1 - (node.z * config.scrollDepthMultiplier);
-                const nodeScreenY = node.baseY - scrollY * parallaxStrength;
-
-                const dx = node.baseX - mouseX;
-                const dy = nodeScreenY - mouseY;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance < mouseConfig.clearRadius && distance > 0) {
-                    const pushFactor = (mouseConfig.clearRadius - distance) / mouseConfig.clearRadius;
-                    const depthScale = 0.5 + node.z * 0.5;
-                    const push = pushFactor * mouseConfig.pushStrength * depthScale;
-
-                    node.baseX += (dx / distance) * push * 10;
-                    node.baseY += (dy / distance) * push * 10;
-                }
-            }
-
-            // Wrap around edges
-            if (node.baseX < -50) node.baseX = canvas.width + 50;
-            if (node.baseX > canvas.width + 50) node.baseX = -50;
-            if (node.baseY < -50) node.baseY = pageHeight + 50;
-            if (node.baseY > pageHeight + 50) node.baseY = -50;
-        });
-    }
-
-    // Get scroll-adjusted position for parallax
-    function getNodePosition(node) {
-        const parallaxStrength = 1 - (node.z * config.scrollDepthMultiplier);
-        const yOffset = scrollY * parallaxStrength;
-
-        return {
-            x: node.baseX,
-            y: node.baseY - yOffset
-        };
-    }
-
-    // Generate connection key
-    function getConnectionKey(i, j) {
-        return i < j ? `${i}-${j}` : `${j}-${i}`;
-    }
-
-    // Draw connections between nearby nodes
-    function drawConnections() {
-        const newConnections = new Set();
-
-        for (let i = 0; i < nodes.length; i++) {
-            for (let j = i + 1; j < nodes.length; j++) {
-                const nodeA = nodes[i];
-                const nodeB = nodes[j];
-
-                const posA = getNodePosition(nodeA);
-                const posB = getNodePosition(nodeB);
-
-                const distance = Math.sqrt(
-                    (posB.x - posA.x) ** 2 + (posB.y - posA.y) ** 2
-                );
-
-                if (distance < config.connectionDistance) {
-                    const connectionKey = getConnectionKey(i, j);
-                    newConnections.add(connectionKey);
-
-                    // Flash on new connection
-                    if (!activeConnections.has(connectionKey)) {
-                        flashingConnections.set(connectionKey, { intensity: 0.4, color: flashColor });
-                    }
-
-                    // Line opacity based on distance and average depth
-                    const avgDepth = (nodeA.z + nodeB.z) / 2;
-                    const distanceFade = 1 - distance / config.connectionDistance;
-                    const opacity = distanceFade * avgDepth * 0.3;
-
-                    const flash = flashingConnections.get(connectionKey);
-                    const flashIntensity = flash ? flash.intensity : 0;
-                    const currentFlashColor = flash ? flash.color : null;
-
-                    // Draw connection line — dark on light background
-                    ctx.beginPath();
-                    ctx.moveTo(posA.x, posA.y);
-                    ctx.lineTo(posB.x, posB.y);
-                    ctx.strokeStyle = `rgba(50, 50, 50, ${opacity})`;
-                    ctx.lineWidth = 0.5 + avgDepth * 0.5;
-                    ctx.stroke();
-
-                    // Draw flash glow at both nodes
-                    if (flashIntensity > 0.01 && currentFlashColor) {
-                        const { r, g, b } = currentFlashColor;
-
-                        // Glow at node A
-                        const glowRadiusA = nodeA.size * 2;
-                        const flashGlowA = ctx.createRadialGradient(
-                            posA.x, posA.y, 0,
-                            posA.x, posA.y, glowRadiusA
-                        );
-                        flashGlowA.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${flashIntensity * 0.5})`);
-                        flashGlowA.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, ${flashIntensity * 0.2})`);
-                        flashGlowA.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-
-                        ctx.beginPath();
-                        ctx.arc(posA.x, posA.y, glowRadiusA, 0, Math.PI * 2);
-                        ctx.fillStyle = flashGlowA;
-                        ctx.fill();
-
-                        // Glow at node B
-                        const glowRadiusB = nodeB.size * 2;
-                        const flashGlowB = ctx.createRadialGradient(
-                            posB.x, posB.y, 0,
-                            posB.x, posB.y, glowRadiusB
-                        );
-                        flashGlowB.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${flashIntensity * 0.5})`);
-                        flashGlowB.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, ${flashIntensity * 0.2})`);
-                        flashGlowB.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-
-                        ctx.beginPath();
-                        ctx.arc(posB.x, posB.y, glowRadiusB, 0, Math.PI * 2);
-                        ctx.fillStyle = flashGlowB;
-                        ctx.fill();
-                    }
-                }
-            }
-        }
-
-        // Update active connections
-        activeConnections = newConnections;
-
-        // Decay flash intensity
-        flashingConnections.forEach((flash, key) => {
-            const newIntensity = flash.intensity * 0.96;
-            if (newIntensity < 0.01) {
-                flashingConnections.delete(key);
+            if (currentZone === 'cta') {
+                // Cycle through blue shades — each orb offset in phase
+                var cycleSpeed = 0.15; // full cycle every ~47s (7 shades)
+                var phase = (now * cycleSpeed + orb.index * 1.4) % blueShades.length;
+                var idx = Math.floor(phase);
+                var frac = phase - idx;
+                var a = blueShades[idx];
+                var b = blueShades[(idx + 1) % blueShades.length];
+                target = [
+                    a[0] + (b[0] - a[0]) * frac,
+                    a[1] + (b[1] - a[1]) * frac,
+                    a[2] + (b[2] - a[2]) * frac,
+                    0.55
+                ];
             } else {
-                flashingConnections.set(key, { ...flash, intensity: newIntensity });
+                target = targetPalette[orb.index];
+            }
+
+            if (!target) return;
+
+            // Only start lerping after this orb's stagger delay
+            var delay = orbTransitionDelays[orb.index] || 0;
+            if (elapsed < delay) return;
+
+            orb.currentColor[0] += (target[0] - orb.currentColor[0]) * lerpSpeed;
+            orb.currentColor[1] += (target[1] - orb.currentColor[1]) * lerpSpeed;
+            orb.currentColor[2] += (target[2] - orb.currentColor[2]) * lerpSpeed;
+            orb.currentOpacity += (target[3] - orb.currentOpacity) * lerpSpeed;
+        });
+    }
+
+    function drawOrb(orb, time) {
+        var angle = (time / orb.period) * Math.PI * 2 + orb.phase;
+        var ox = orb.baseX + Math.cos(angle) * orb.orbitR + orb.displaceX;
+        var oy = orb.baseY + Math.sin(angle * 0.7) * orb.orbitR * 0.8 + orb.displaceY;
+
+        var r = Math.round(orb.currentColor[0]);
+        var g = Math.round(orb.currentColor[1]);
+        var b = Math.round(orb.currentColor[2]);
+        var a = orb.currentOpacity;
+
+        var grad = ctx.createRadialGradient(ox, oy, 0, ox, oy, orb.radius);
+        grad.addColorStop(0, 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')');
+        grad.addColorStop(0.4, 'rgba(' + r + ',' + g + ',' + b + ',' + (a * 0.6) + ')');
+        grad.addColorStop(1, 'rgba(' + r + ',' + g + ',' + b + ',0)');
+
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(ox, oy, orb.radius, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    function updateMouseDisplacement() {
+        if (!mouseActive) {
+            orbs.forEach(function(orb) {
+                orb.displaceX *= 0.95;
+                orb.displaceY *= 0.95;
+            });
+            return;
+        }
+
+        orbs.forEach(function(orb) {
+            var dx = orb.baseX - mouseX;
+            var dy = orb.baseY - mouseY;
+            var dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < 400 && dist > 0) {
+                var strength = (1 - dist / 400) * 25;
+                var targetX = (dx / dist) * strength;
+                var targetY = (dy / dist) * strength;
+                orb.displaceX += (targetX - orb.displaceX) * 0.08;
+                orb.displaceY += (targetY - orb.displaceY) * 0.08;
+            } else {
+                orb.displaceX *= 0.95;
+                orb.displaceY *= 0.95;
             }
         });
     }
 
-    // Draw nodes — light gray/silver for white background
-    function drawNodes() {
-        nodes.forEach(node => {
-            const pos = getNodePosition(node);
+    function updateZone() {
+        var newZone = getActiveZone();
+        if (newZone !== currentZone) {
+            currentZone = newZone;
+            transitionTime = performance.now() / 1000;
 
-            // Skip if off screen
-            const margin = node.size * 4;
-            if (pos.y < -margin || pos.y > canvas.height + margin) return;
-            if (pos.x < -margin || pos.x > canvas.width + margin) return;
+            // Sort orbs by proximity to the intersecting section edge
+            // Scrolling down = new section enters from bottom, so nearest to bottom first
+            // Scrolling up = new section enters from top, so nearest to top first
+            var scrollingDown = (window.scrollY || 0) >= (lastScrollY || 0);
+            lastScrollY = window.scrollY || 0;
 
-            const displaySize = node.size;
+            var distances = orbs.map(function(orb, i) {
+                // Distance from the entering edge (bottom if scrolling down, top if up)
+                var dist = scrollingDown ? (canvas.height - orb.baseY) : orb.baseY;
+                return { index: i, dist: dist };
+            });
+            distances.sort(function(a, b) { return a.dist - b.dist; });
 
-            // Subtle brand-colored glow (proportional to node size)
-            const glowSize = displaySize * 2.5;
-            const gradient = ctx.createRadialGradient(
-                pos.x, pos.y, 0,
-                pos.x, pos.y, glowSize
-            );
-            // Soft blue glow matching AllTime brand
-            gradient.addColorStop(0, `rgba(0, 122, 255, 0.12)`);
-            gradient.addColorStop(0.4, `rgba(0, 122, 255, 0.04)`);
-            gradient.addColorStop(1, `rgba(0, 122, 255, 0)`);
+            var staggerStep = 0.12; // seconds between each orb starting
+            orbTransitionDelays = [];
+            distances.forEach(function(d, rank) {
+                orbTransitionDelays[d.index] = rank * staggerStep;
+            });
 
-            ctx.beginPath();
-            ctx.arc(pos.x, pos.y, glowSize, 0, Math.PI * 2);
-            ctx.fillStyle = gradient;
-            ctx.fill();
-
-            // Core dot — light gray/silver
-            ctx.beginPath();
-            ctx.arc(pos.x, pos.y, displaySize, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(200, 200, 200, ${0.4 + node.z * 0.4})`;
-            ctx.fill();
-        });
+            // Only toggle dark mode via scroll if user hasn't manually chosen
+            if (window.__themeToggle && !window.__themeToggle.isUserChosen()) {
+                if (currentZone === 'macos') {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+            }
+        }
     }
 
-    // Render frame
-    function render() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawConnections();
-        drawNodes();
-    }
-
-    // Animation loop
     function animate() {
-        updateScroll();
-        updateNodes();
-        render();
+        var time = performance.now() / 1000 - startTime;
+
+        updateZone();
+        lerpColors();
+        updateMouseDisplacement();
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        orbs.forEach(function(orb) { drawOrb(orb, time); });
+
         requestAnimationFrame(animate);
     }
 
-    // Handle scroll
-    function handleScroll() {
-        targetScrollY = Math.max(0, window.scrollY);
-    }
-
-    // Smooth scroll interpolation
-    function updateScroll() {
-        scrollY += (targetScrollY - scrollY) * 0.15;
-    }
-
-    // Initialize
     function init() {
-        targetScrollY = Math.max(0, window.scrollY);
-        scrollY = targetScrollY;
+        resizeCanvas();
+        cacheSections();
+        buildOrbs();
 
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        pageHeight = document.documentElement.scrollHeight;
-        lastWidth = window.innerWidth;
-        lastHeight = window.innerHeight;
-
-        initNodes();
-
-        // Recalculate page height after layout settles
-        setTimeout(() => {
-            pageHeight = document.documentElement.scrollHeight;
+        setTimeout(function() {
+            resizeCanvas();
+            cacheSections();
+            buildOrbs();
         }, 100);
 
         window.addEventListener('resize', handleResize);
-        window.addEventListener('scroll', handleScroll, { passive: true });
 
-        // Mouse tracking for repulsion
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            mouseActive = true;
-        });
+        if (!isMobile()) {
+            document.addEventListener('mousemove', function(e) {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                mouseActive = true;
+            });
 
-        document.addEventListener('mouseleave', () => {
-            mouseActive = false;
+            document.addEventListener('mouseleave', function() {
+                mouseActive = false;
+            });
+        }
+
+        // Listen for cycling word changes to update hero palette with stagger
+        document.addEventListener('heroWordChange', function(e) {
+            var word = e.detail;
+            if (heroWordPalettes[word] && currentZone === 'hero') {
+                currentHeroWord = word;
+                palettes.hero = heroWordPalettes[word];
+                transitionTime = performance.now() / 1000;
+
+                // Stagger orbs randomly for an organic trickle
+                var indices = orbs.map(function(_, i) { return i; });
+                // Shuffle
+                for (var i = indices.length - 1; i > 0; i--) {
+                    var j = Math.floor(Math.random() * (i + 1));
+                    var tmp = indices[i];
+                    indices[i] = indices[j];
+                    indices[j] = tmp;
+                }
+                orbTransitionDelays = [];
+                indices.forEach(function(idx, rank) {
+                    orbTransitionDelays[idx] = rank * 0.25;
+                });
+            }
         });
 
         animate();
