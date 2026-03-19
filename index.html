@@ -303,29 +303,10 @@
             padding: 11rem 2rem 5rem;
             position: relative;
             overflow: hidden;
-        }
-
-        /* Animated gradient background */
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: 
-                radial-gradient(circle at 20% 20%, rgba(249,237,50,0.1) 0%, transparent 40%),
-                radial-gradient(circle at 80% 30%, rgba(28,117,188,0.08) 0%, transparent 40%),
-                radial-gradient(circle at 70% 80%, rgba(236,0,140,0.08) 0%, transparent 40%),
-                radial-gradient(circle at 30% 70%, rgba(76,175,80,0.08) 0%, transparent 40%);
-            animation: gradientMove 20s ease-in-out infinite;
-            z-index: -1;
-        }
-
-        @keyframes gradientMove {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            33% { transform: translate(2%, 2%) rotate(1deg); }
-            66% { transform: translate(-1%, 1%) rotate(-1deg); }
+            background-image: url('assets/hero-bg.png');
+            background-size: cover;
+            background-position: center top;
+            background-repeat: no-repeat;
         }
 
         /* Floating Event Circles */
