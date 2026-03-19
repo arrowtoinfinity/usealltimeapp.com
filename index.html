@@ -1343,6 +1343,11 @@
             opacity: 1;
         }
 
+        .feature-card.parent-container:has(.child-event:hover)::before,
+        .feature-card.parent-container:has(.child-event:hover)::after {
+            opacity: 0;
+        }
+
         /* Card colors - subtle light (top) to dark (bottom) gradient */
         .feature-card:nth-child(1) { --card-color: #f26522; --card-color-light: #f8935e; } /* Dynamic Calendar - orange */
         .feature-card:nth-child(2) { --card-color: #f9ed32; --card-color-light: #fcf570; } /* Habit Tracking - yellow */
@@ -1401,7 +1406,7 @@
             overflow: visible;
         }
 
-        .feature-card.parent-container:hover,
+        .feature-card.parent-container:hover:not(:has(.child-event:hover)),
         .feature-card.parent-container.centered {
             background: rgba(175, 82, 222, 0.25);
             border: 2px solid rgba(175, 82, 222, 0.8);
@@ -1418,8 +1423,8 @@
             border: 1px solid rgba(175, 82, 222, 0.4);
         }
 
-        .feature-card.parent-container:hover::before,
-        .feature-card.parent-container:hover::after,
+        .feature-card.parent-container:hover:not(:has(.child-event:hover))::before,
+        .feature-card.parent-container:hover:not(:has(.child-event:hover))::after,
         .feature-card.parent-container.centered::before,
         .feature-card.parent-container.centered::after {
             border: 2px solid rgba(175, 82, 222, 0.8);
