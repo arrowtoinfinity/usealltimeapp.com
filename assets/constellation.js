@@ -26,12 +26,12 @@
     const palettes = {
         hero: heroWordPalettes.day,
         features: [
-            [0, 0, 0, 0.5],
-            [10, 10, 15, 0.5],
-            [0, 0, 0, 0.4],
-            [5, 5, 10, 0.5],
-            [0, 0, 0, 0.4],
-            [10, 10, 15, 0.45],
+            [28, 117, 188, 0.6],
+            [175, 82, 222, 0.5],
+            [236, 0, 140, 0.5],
+            [242, 101, 34, 0.5],
+            [249, 237, 50, 0.4],
+            [175, 82, 222, 0.45],
         ],
         macos: [
             [28, 117, 188, 0.7],
@@ -67,6 +67,32 @@
         { cx: 0.50, cy: 0.15, size: 0.45, orbitR: 150, period: 19   },
         { cx: 0.40, cy: 0.50, size: 0.48, orbitR: 145, period: 16.5 },
     ];
+
+    // Feature card colors: [r, g, b] — matched to --card-color in CSS
+    var featureCardColors = {
+        1: [242, 101, 34],   // Dynamic Calendar - orange
+        2: [249, 237, 50],   // Habit Tracking - yellow
+        3: [52, 199, 89],    // Health Goals - green
+        4: [175, 82, 222],   // AI Productivity - purple
+        5: [236, 0, 140],    // Cycle Tracking - magenta
+        6: [0, 122, 255],    // Powerful Insights - blue
+    };
+
+    // Default features palette (all-color)
+    var featuresDefaultPalette = palettes.features.slice();
+    var featureHoverActive = false;
+
+    // Generate shades from a base color (like CTA blue cycling)
+    function generateShadesFromColor(r, g, b) {
+        return [
+            [r, g, b, 0.6],
+            [Math.min(255, r + 30), Math.min(255, g + 30), Math.min(255, b + 30), 0.5],
+            [Math.max(0, r - 20), Math.max(0, g - 20), Math.max(0, b - 20), 0.5],
+            [Math.min(255, r + 50), Math.min(255, g + 50), Math.min(255, b + 50), 0.5],
+            [Math.max(0, r - 40), Math.max(0, g - 40), Math.max(0, b - 40), 0.45],
+            [r, g, b, 0.45],
+        ];
+    }
 
     let orbs = [];
     let mouseX = -9999;
@@ -342,6 +368,53 @@
                     orbTransitionDelays[idx] = rank * 0.25;
                 });
             }
+        });
+
+        // Feature card hover — change orbs to match card color
+        var featureCards = document.querySelectorAll('.feature-card');
+        featureCards.forEach(function(card, idx) {
+            var cardNum = idx + 1;
+            var color = featureCardColors[cardNum];
+            if (!color) return;
+
+            card.addEventListener('mouseenter', function() {
+                if (currentZone !== 'features') return;
+                featureHoverActive = true;
+                palettes.features = generateShadesFromColor(color[0], color[1], color[2]);
+                transitionTime = performance.now() / 1000;
+
+                // Stagger randomly
+                var indices = orbs.map(function(_, i) { return i; });
+                for (var i = indices.length - 1; i > 0; i--) {
+                    var j = Math.floor(Math.random() * (i + 1));
+                    var tmp = indices[i];
+                    indices[i] = indices[j];
+                    indices[j] = tmp;
+                }
+                orbTransitionDelays = [];
+                indices.forEach(function(idx, rank) {
+                    orbTransitionDelays[idx] = rank * 0.15;
+                });
+            });
+
+            card.addEventListener('mouseleave', function() {
+                if (currentZone !== 'features') return;
+                featureHoverActive = false;
+                palettes.features = featuresDefaultPalette.slice();
+                transitionTime = performance.now() / 1000;
+
+                var indices = orbs.map(function(_, i) { return i; });
+                for (var i = indices.length - 1; i > 0; i--) {
+                    var j = Math.floor(Math.random() * (i + 1));
+                    var tmp = indices[i];
+                    indices[i] = indices[j];
+                    indices[j] = tmp;
+                }
+                orbTransitionDelays = [];
+                indices.forEach(function(idx, rank) {
+                    orbTransitionDelays[idx] = rank * 0.15;
+                });
+            });
         });
 
         animate();
