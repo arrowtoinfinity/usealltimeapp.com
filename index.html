@@ -1664,16 +1664,6 @@
             position: relative;
         }
 
-        .mac-screen {
-            clip-path: inset(50% 0 50% 0);
-            transition: clip-path 0s;
-        }
-
-        .mac-screen.tv-on {
-            clip-path: inset(0 0 0 0);
-            transition: clip-path 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
         .mac-screen::before {
             content: '';
             position: absolute;
@@ -1697,6 +1687,12 @@
             justify-content: center;
             box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
             position: relative;
+            clip-path: inset(50% 0 50% 0);
+        }
+
+        .mac-screen.tv-on {
+            clip-path: inset(0 0 0 0);
+            transition: clip-path 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .mac-coming-soon {
