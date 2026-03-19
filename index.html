@@ -1342,6 +1342,8 @@
         .feature-card.centered::before,
         .feature-card.centered::after {
             opacity: 1;
+            border-width: 2px;
+            border-color: color-mix(in srgb, var(--card-color) 80%, transparent);
         }
 
         .feature-card.parent-container:has(.child-event:hover)::before,
