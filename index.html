@@ -3093,22 +3093,8 @@
 
             // Video paths for each platform (same for now, update when macOS videos ready)
             const platformVideos = {
-                ios: [
-                    'videos/1_Bottom Control Panel.mp4',
-                    'videos/2_Timeline.mp4',
-                    'videos/3_Checklist.mp4',
-                    'videos/4_Focus.mp4',
-                    'videos/5_Chat.mp4',
-                    'videos/6_Analytics Hub.mp4'
-                ],
-                macos: [
-                    'videos/1_Bottom Control Panel.mp4',
-                    'videos/2_Timeline.mp4',
-                    'videos/3_Checklist.mp4',
-                    'videos/4_Focus.mp4',
-                    'videos/5_Chat.mp4',
-                    'videos/6_Analytics Hub.mp4'
-                ]
+                ios: ['', '', '', '', '', ''],
+                macos: ['', '', '', '', '', '']
             };
 
             badgeNavLinks.forEach(link => {
@@ -3310,10 +3296,11 @@
             // Mac screen TV turn-on animation
             (function() {
                 var macScreen = document.querySelector('.mac-screen');
-                if (!macScreen) return;
+                var macMockup = document.querySelector('.mac-mockup');
+                if (!macScreen || !macMockup) return;
 
                 // If already scrolled past, show immediately
-                if (macScreen.getBoundingClientRect().bottom < window.innerHeight) {
+                if (macMockup.getBoundingClientRect().bottom < window.innerHeight) {
                     macScreen.classList.add('tv-on');
                     return;
                 }
@@ -3327,9 +3314,9 @@
                             macObserver.disconnect();
                         }
                     });
-                }, { threshold: 0.3 });
+                }, { threshold: 0.2 });
 
-                macObserver.observe(macScreen);
+                macObserver.observe(macMockup);
             })();
 
             // GSAP Review Card Animations - Natural toss with inverted exit angle
@@ -3569,16 +3556,7 @@
 
             // Media files for each screen (videos and images)
             const screenshotImages = [
-                'videos/1_Bottom Control Panel.mp4',
-                'videos/2_Timeline.mp4',
-                'videos/3_Checklist.mp4',
-                'videos/4_Focus.mp4',
-                'videos/5_Chat.mp4',
-                'videos/6_Analytics Hub.mp4',
-                'screenshots/8_Nutrition Stats.png',
-                'screenshots/9_Workout Stats.png',
-                'screenshots/10_Group Edit.png',
-                'screenshots/11_Customization.png'
+                '', '', '', '', '', '', '', '', '', ''
             ];
 
             // Titles for each screen (main title / subtitle)
