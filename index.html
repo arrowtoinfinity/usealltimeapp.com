@@ -2777,6 +2777,12 @@
                 return;
             }
 
+            // Skip wall for returning waitlist users
+            if (localStorage.getItem('alltime_waitlist')) {
+                if (overlay) overlay.style.display = 'none';
+                return;
+            }
+
             // Coming Soon word cycling animation
             const container = document.querySelector('.coming-soon-word-container');
             const words = document.querySelectorAll('.coming-soon-word');
@@ -2844,12 +2850,21 @@
             if (form && wlContainer && successMsg) {
                 form.addEventListener('submit', function() {
                     submitBtn.disabled = true;
+                    localStorage.setItem('alltime_waitlist', 'true');
                     setTimeout(function() {
                         form.style.display = 'none';
                         successMsg.style.display = 'block';
                         if (typeof gtag !== 'undefined') {
                             gtag('event', 'waitlist_signup', { 'event_category': 'engagement', 'event_label': 'Coming Soon Overlay' });
                         }
+                        // Fade out overlay and reveal site
+                        setTimeout(function() {
+                            overlay.style.transition = 'opacity 0.5s ease';
+                            overlay.style.opacity = '0';
+                            overlay.addEventListener('transitionend', function() {
+                                overlay.style.display = 'none';
+                            }, { once: true });
+                        }, 1500);
                     }, 500);
                 });
 
