@@ -413,12 +413,10 @@
             const dayKeys = Object.keys(dayGroupsMap).sort();
             const isMultiDay = dayKeys.length > 1;
 
-            // Auto-select first available day
+            // Auto-select first available day and always show calendar
             selectedDay = dayKeys[0];
-            if (isMultiDay) {
-                const firstDay = new Date(dayKeys[0] + 'T12:00:00');
-                calMonth = { year: firstDay.getFullYear(), month: firstDay.getMonth() };
-            }
+            const firstDay = new Date(dayKeys[0] + 'T12:00:00');
+            calMonth = { year: firstDay.getFullYear(), month: firstDay.getMonth() };
 
             let html = `<div class="booking-layout">`;
 
@@ -431,12 +429,8 @@
                 </div>
             `;
 
-            // Middle column: calendar (or empty for single day)
-            if (isMultiDay) {
-                html += `<div class="glass-card" id="calendar-section"></div>`;
-            } else {
-                html += `<div></div>`; // placeholder for grid
-            }
+            // Middle column: calendar (always shown)
+            html += `<div class="glass-card" id="calendar-section"></div>`;
 
             // Right column: slots + form
             html += `
@@ -471,7 +465,7 @@
             document.getElementById('content').innerHTML = html;
             document.getElementById('content').style.display = 'block';
 
-            if (isMultiDay) renderCalendar();
+            renderCalendar();
             renderSlots(selectedDay);
         }
 
