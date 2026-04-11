@@ -42,7 +42,7 @@
                 --shadow-md: 0 4px 8px rgba(0,0,0,0.3);
             }
         }
-        body.dark-mode {
+        html.dark-mode, html.dark-mode body {
             --color-background: #000000;
             --color-card: #1C1C1E;
             --color-glass: rgba(44,44,46,0.6);
@@ -77,7 +77,7 @@
             transition: background 0.8s ease, border-color 0.8s ease;
         }
         @media (prefers-color-scheme: dark) { header { background: rgba(28,28,30,0.5); } }
-        body.dark-mode header { background: rgba(28,28,30,0.5); }
+        html.dark-mode header { background: rgba(28,28,30,0.5); }
         .logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
         .logo img { height: 49px; width: auto; }
         .logo-text {
@@ -114,7 +114,7 @@
             transition: background 0.4s ease;
         }
         @media (prefers-color-scheme: dark) { .page-frost { background: rgba(28,28,30,0.55); } }
-        body.dark-mode .page-frost { background: rgba(28,28,30,0.55); }
+        html.dark-mode .page-frost { background: rgba(28,28,30,0.55); }
         .main-content, footer { position: relative; z-index: 1; }
 
         /* Main layout — horizontal on desktop, vertical on mobile */
@@ -149,7 +149,7 @@
             transition: background 0.4s ease;
         }
         @media (prefers-color-scheme: dark) { .glass-card { border-color: rgba(255,255,255,0.08); } }
-        body.dark-mode .glass-card { border-color: rgba(255,255,255,0.08); }
+        html.dark-mode .glass-card { border-color: rgba(255,255,255,0.08); }
 
         /* Meeting info (used in manage view) */
         .meeting-info { text-align: center; }
@@ -210,7 +210,7 @@
             box-shadow: var(--shadow-card);
         }
         @media (prefers-color-scheme: dark) { .slot { border-color: rgba(255,255,255,0.08); } }
-        body.dark-mode .slot { border-color: rgba(255,255,255,0.08); }
+        html.dark-mode .slot { border-color: rgba(255,255,255,0.08); }
         .slot:hover { border-color: var(--color-primary); }
         .slot.selected { border-color: var(--color-primary); background: rgba(0,122,255,0.15); }
         .slot.hidden-slot { display: none; }
@@ -288,7 +288,7 @@
         .theme-toggle:hover { transform: scale(1.1); }
         .theme-toggle:active { transform: scale(0.95); }
         @media (prefers-color-scheme: dark) { .theme-toggle { background: rgba(255,255,255,0.15); color: #F2F2F7; } }
-        body.dark-mode .theme-toggle { background: rgba(255,255,255,0.15); color: #F2F2F7; }
+        html.dark-mode .theme-toggle { background: rgba(255,255,255,0.15); color: #F2F2F7; }
 
         /* Responsive — stack vertically on mobile */
         @media (max-width: 860px) {
@@ -348,11 +348,11 @@
         // Theme toggle
         const themeBtn = document.getElementById('theme-toggle');
         const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') document.body.classList.add('dark-mode');
-        themeBtn.textContent = document.body.classList.contains('dark-mode') ? '\u2600' : '\u263E';
+        if (savedTheme === 'dark') document.documentElement.classList.add('dark-mode');
+        themeBtn.textContent = document.documentElement.classList.contains('dark-mode') ? '\u2600' : '\u263E';
         themeBtn.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
+            document.documentElement.classList.toggle('dark-mode');
+            const isDark = document.documentElement.classList.contains('dark-mode');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
             themeBtn.textContent = isDark ? '\u2600' : '\u263E';
         });
