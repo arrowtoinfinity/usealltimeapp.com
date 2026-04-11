@@ -325,7 +325,18 @@
         async function init() {
             const path = window.location.pathname;
             const params = new URLSearchParams(window.location.search);
-            const code = params.get('code') || path.split('/').filter(Boolean).pop();
+            const segments = path.split('/').filter(Boolean); // ['a', code] or ['a', code, 'manage', bookingId]
+
+            // Check if this is a manage booking page
+            const manageIdx = segments.indexOf('manage');
+            if (manageIdx !== -1 && segments[manageIdx + 1]) {
+                const bookingId = segments[manageIdx + 1];
+                const token = params.get('token');
+                if (!token) { showError('Missing manage token.'); return; }
+                return initManage(bookingId, token);
+            }
+
+            const code = params.get('code') || segments[segments.length - 1];
             if (!code || code === 'a') { showError('No availability code provided.'); return; }
 
             try {
@@ -586,6 +597,8 @@
             const timeStr = start.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', timeZone: tz })
                 + ' at ' + start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: tz });
 
+            const manageUrl = `${window.location.origin}/a/${result.share_code}/manage/${result.booking_id}?token=${result.manage_token}`;
+
             document.getElementById('content').innerHTML = `
                 <div class="success">
                     <div class="success-icon">\u2705</div>
@@ -596,6 +609,11 @@
                     <p style="margin-top:24px; color:var(--text-secondary); font-size:0.9rem">
                         The organizer has been notified and the event has been added to their calendar.
                     </p>
+                    <div style="margin-top:24px; padding:16px; background:var(--color-card); border-radius:var(--radius); box-shadow:var(--shadow-card);">
+                        <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:8px;">Need to reschedule or cancel?</p>
+                        <a href="${manageUrl}" style="color:var(--color-primary); font-size:0.9rem; font-weight:600; text-decoration:none;">Manage Booking &rarr;</a>
+                        <p style="font-size:0.75rem; color:var(--text-tertiary); margin-top:8px;">Save this link — you'll need it to make changes.</p>
+                    </div>
                 </div>
             `;
         }
@@ -622,6 +640,199 @@
                 </div>
             `;
             document.getElementById('content').style.display = 'block';
+        }
+
+        // ========== MANAGE BOOKING ==========
+
+        let manageData = null; // { booking, share }
+        let manageBookingId = null;
+        let manageToken = null;
+
+        async function initManage(bookingId, token) {
+            manageBookingId = bookingId;
+            manageToken = token;
+            try {
+                const res = await fetch(
+                    `${SUPABASE_URL}/functions/v1/manage-booking?booking_id=${bookingId}&token=${token}`,
+                    { headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'apikey': SUPABASE_ANON_KEY } }
+                );
+                if (!res.ok) {
+                    const err = await res.json();
+                    showError(err.error || 'Could not load booking.');
+                    return;
+                }
+                manageData = await res.json();
+                renderManage();
+            } catch (err) {
+                showError('Failed to load booking. Please try again.');
+                console.error(err);
+            }
+        }
+
+        function renderManage() {
+            const b = manageData.booking;
+            const s = manageData.share;
+            const tz = s.timezone || 'America/Los_Angeles';
+            const start = new Date(b.slot_start);
+            const end = new Date(b.slot_end);
+            const timeStr = start.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', timeZone: tz })
+                + ', ' + start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: tz })
+                + ' \u2013 ' + end.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: tz });
+
+            const isCancelled = b.status === 'cancelled';
+
+            let html = `
+                <div class="meeting-info">
+                    <h1>${escapeHtml(s.title)}</h1>
+                    <p style="margin-top:4px;">Your booking</p>
+                </div>
+                <div class="booking-form" style="display:block;">
+                    <div style="margin-bottom:16px;">
+                        <p style="font-size:0.85rem; color:var(--text-secondary);">Name</p>
+                        <p style="font-weight:600;">${escapeHtml(b.booker_name)}</p>
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <p style="font-size:0.85rem; color:var(--text-secondary);">Time</p>
+                        <p style="font-weight:600; color:var(--color-primary);">${timeStr}</p>
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <p style="font-size:0.85rem; color:var(--text-secondary);">Status</p>
+                        <p style="font-weight:600; color:${isCancelled ? 'var(--color-danger)' : 'var(--color-success)'};">${b.status.charAt(0).toUpperCase() + b.status.slice(1)}</p>
+                    </div>
+            `;
+
+            if (!isCancelled) {
+                html += `
+                    <div style="display:flex; gap:12px; margin-top:20px;">
+                        <button class="btn-book" onclick="startReschedule()" style="flex:1; background:var(--color-primary);">Reschedule</button>
+                        <button class="btn-book" onclick="cancelBooking()" style="flex:1; background:var(--color-danger);">Cancel</button>
+                    </div>
+                `;
+            }
+
+            html += `</div>`;
+            html += `<div id="reschedule-section" style="display:none;"></div>`;
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').innerHTML = html;
+            document.getElementById('content').style.display = 'block';
+        }
+
+        function startReschedule() {
+            const s = manageData.share;
+            const duration = s.meeting_duration_minutes;
+            const tz = s.timezone || 'America/Los_Angeles';
+
+            // Rebuild available chunks (same logic as booking page)
+            const slots = s.available_slots || [];
+            const chunks = [];
+            for (const slot of slots) {
+                const start = new Date(slot.start);
+                const end = new Date(slot.end);
+                let current = new Date(start);
+                while (current.getTime() + duration * 60000 <= end.getTime()) {
+                    const chunkEnd = new Date(current.getTime() + duration * 60000);
+                    if (chunkEnd > new Date()) {
+                        chunks.push({ start: new Date(current), end: chunkEnd });
+                    }
+                    current = chunkEnd;
+                }
+            }
+
+            if (chunks.length === 0) {
+                document.getElementById('reschedule-section').innerHTML =
+                    '<p style="text-align:center; color:var(--text-secondary); padding:20px;">No available time slots remaining.</p>';
+                document.getElementById('reschedule-section').style.display = 'block';
+                return;
+            }
+
+            // Group by day
+            const groups = {};
+            for (const chunk of chunks) {
+                const dayKey = chunk.start.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', timeZone: tz });
+                if (!groups[dayKey]) groups[dayKey] = [];
+                groups[dayKey].push(chunk);
+            }
+
+            let html = '<h3 style="margin-bottom:12px;">Pick a new time</h3>';
+            for (const [day, daySlots] of Object.entries(groups)) {
+                html += `<div class="slots-day-label">${day}</div>`;
+                for (const s of daySlots) {
+                    const timeStr = s.start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: tz })
+                        + ' \u2013 ' + s.end.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: tz });
+                    html += `<div class="slot" data-start="${s.start.toISOString()}" data-end="${s.end.toISOString()}" onclick="selectRescheduleSlot(this)">
+                        <span class="slot-time">${timeStr}</span>
+                    </div>`;
+                }
+            }
+            html += `<button class="btn-book" id="confirm-reschedule-btn" onclick="confirmReschedule()" style="margin-top:16px; display:none;">Confirm Reschedule</button>`;
+
+            document.getElementById('reschedule-section').innerHTML = html;
+            document.getElementById('reschedule-section').style.display = 'block';
+            document.getElementById('reschedule-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        let rescheduleSlot = null;
+        function selectRescheduleSlot(el) {
+            document.querySelectorAll('#reschedule-section .slot').forEach(s => s.classList.remove('selected'));
+            el.classList.add('selected');
+            rescheduleSlot = { start: el.dataset.start, end: el.dataset.end };
+            document.getElementById('confirm-reschedule-btn').style.display = 'block';
+        }
+
+        async function confirmReschedule() {
+            if (!rescheduleSlot) return;
+            const btn = document.getElementById('confirm-reschedule-btn');
+            btn.disabled = true;
+            btn.textContent = 'Rescheduling...';
+
+            try {
+                const res = await fetch(`${SUPABASE_URL}/functions/v1/manage-booking`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'apikey': SUPABASE_ANON_KEY },
+                    body: JSON.stringify({
+                        booking_id: manageBookingId,
+                        token: manageToken,
+                        action: 'reschedule',
+                        new_slot_start: rescheduleSlot.start,
+                        new_slot_end: rescheduleSlot.end,
+                    }),
+                });
+                const result = await res.json();
+                if (!res.ok) throw new Error(result.error || 'Reschedule failed');
+
+                manageData.booking.slot_start = result.slot_start;
+                manageData.booking.slot_end = result.slot_end;
+                document.getElementById('reschedule-section').style.display = 'none';
+                renderManage();
+            } catch (err) {
+                btn.disabled = false;
+                btn.textContent = 'Confirm Reschedule';
+                alert(err.message);
+            }
+        }
+
+        async function cancelBooking() {
+            if (!confirm('Are you sure you want to cancel this booking?')) return;
+
+            try {
+                const res = await fetch(`${SUPABASE_URL}/functions/v1/manage-booking`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'apikey': SUPABASE_ANON_KEY },
+                    body: JSON.stringify({
+                        booking_id: manageBookingId,
+                        token: manageToken,
+                        action: 'cancel',
+                    }),
+                });
+                const result = await res.json();
+                if (!res.ok) throw new Error(result.error || 'Cancel failed');
+
+                manageData.booking.status = 'cancelled';
+                renderManage();
+            } catch (err) {
+                alert(err.message);
+            }
         }
 
         function escapeHtml(str) {
