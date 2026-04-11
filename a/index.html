@@ -123,9 +123,17 @@
             display: flex; align-items: center; justify-content: center;
         }
 
+        /* Meeting header — full width above grid */
+        .meeting-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 16px;
+        }
+        .meeting-title { font-size: 1.5rem; font-weight: 700; }
+        .meeting-subtitle { color: var(--text-secondary); font-size: 0.9rem; margin-top: 2px; }
+
         .booking-layout {
             display: grid;
-            grid-template-columns: 280px 300px 1fr;
+            grid-template-columns: 300px 1fr;
             gap: 20px;
             align-items: start;
         }
@@ -143,7 +151,7 @@
         @media (prefers-color-scheme: dark) { .glass-card { border-color: rgba(255,255,255,0.08); } }
         body.dark-mode .glass-card { border-color: rgba(255,255,255,0.08); }
 
-        /* Meeting info panel */
+        /* Meeting info (used in manage view) */
         .meeting-info { text-align: center; }
         .meeting-info h1 { font-size: 1.3rem; font-weight: 700; margin-bottom: 6px; }
         .meeting-info p { color: var(--text-secondary); font-size: 0.85rem; }
@@ -431,18 +439,20 @@
             const firstDay = new Date(dayKeys[0] + 'T12:00:00');
             calMonth = { year: firstDay.getFullYear(), month: firstDay.getMonth() };
 
-            let html = `<div class="booking-layout">`;
-
-            // Left column: meeting info
-            html += `
-                <div class="glass-card meeting-info">
-                    <h1>${escapeHtml(share.title)}</h1>
-                    <p>Pick a time that works for you</p>
+            // Title — full width above the grid
+            let html = `
+                <div class="meeting-header">
+                    <div>
+                        <h1 class="meeting-title">${escapeHtml(share.title)}</h1>
+                        <p class="meeting-subtitle">Pick a time that works for you</p>
+                    </div>
                     <span class="duration-badge">${duration} min</span>
                 </div>
             `;
 
-            // Middle column: calendar (always shown)
+            html += `<div class="booking-layout">`;
+
+            // Left column: calendar (always shown)
             html += `<div class="glass-card" id="calendar-section"></div>`;
 
             // Right column: slots + form
