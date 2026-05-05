@@ -2804,9 +2804,25 @@
         <iframe name="waitlist-iframe" style="display: none;"></iframe>
     </div>
     <script>
-        // Preview bypass: add ?preview=alltime2026 to URL to see full site
+        // ============================================================
+        // COMING SOON WALL TOGGLE
+        // Set SHOW_COMING_SOON_WALL = true to re-enable the overlay
+        // (waitlist form, countdown, launch gate). Markup, CSS, and
+        // form handler are all preserved below — flipping this flag is
+        // the only change needed to bring the wall back.
+        // ============================================================
+        const SHOW_COMING_SOON_WALL = false;
+
         (function() {
             const overlay = document.getElementById('comingSoonOverlay');
+
+            // Wall disabled — hide overlay and skip all overlay-related init
+            if (!SHOW_COMING_SOON_WALL) {
+                if (overlay) overlay.style.display = 'none';
+                return;
+            }
+
+            // Preview bypass: add ?preview=alltime2026 to URL to see full site
             if (new URLSearchParams(window.location.search).get('preview') === 'alltime2026') {
                 if (overlay) overlay.style.display = 'none';
                 return;
