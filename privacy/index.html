@@ -750,7 +750,7 @@
             <p>When you access the Services, we automatically collect device information (type, model, OS), usage data (features accessed, actions taken), log data (IP address, timestamps), and location information (only with your consent and only while actively using location features).</p>
 
             <h4>3.2.1 Advertising Identifier (IDFA / Device ID)</h4>
-            <p>If you grant permission through the iOS App Tracking Transparency (ATT) system prompt, we collect your device's <strong>Advertising Identifier (IDFA on iOS)</strong>. We use this identifier solely for marketing attribution — that is, to measure whether visitors who saw or clicked our ads went on to subscribe to AllTime. The IDFA is forwarded to <strong>RevenueCat</strong> (our subscription management provider) and from there to <strong>Meta (Facebook)</strong> via the Meta Conversions API.</p>
+            <p>If you grant permission through the iOS App Tracking Transparency (ATT) system prompt, we collect your device's <strong>Advertising Identifier (IDFA on iOS)</strong>. We use this identifier solely for marketing attribution — that is, to measure whether visitors who saw or clicked our ads went on to subscribe to AllTime. The IDFA is forwarded to <strong>RevenueCat</strong> (our subscription management provider) and from there to <strong>Meta (Facebook)</strong> via the Meta Conversions API. Separately, the Facebook iOS SDK is also installed in the AllTime app and sends standard install and activation events directly to Meta when ATT consent has been granted, independently of the RevenueCat pipeline.</p>
             <p>If you do not grant ATT consent, no IDFA is collected, no IDFA is shared with RevenueCat or Meta, and you will not be measured for advertising attribution. You can change this decision at any time:</p>
             <ul>
                 <li><strong>To revoke ATT consent:</strong> iOS Settings → Privacy &amp; Security → Tracking → toggle "Allow Apps to Request to Track" off, or go to iOS Settings → AllTime → toggle "Allow Tracking" off.</li>
@@ -906,8 +906,9 @@
             <ul>
                 <li><strong>RevenueCat</strong> — Manages subscription state and orchestrates attribution forwarding. Receives: IDFA (only with ATT consent), subscription events, app user ID, country, platform. <a href="https://www.revenuecat.com/privacy" target="_blank">RevenueCat Privacy Policy</a></li>
                 <li><strong>Meta (Facebook) — Conversions API</strong> — Receives: IDFA (only with ATT consent), event type (purchase/trial start/cancellation), event timestamp, currency, and value. Used for ad-campaign attribution. <a href="https://www.facebook.com/privacy/policy/" target="_blank">Meta Privacy Policy</a></li>
+                <li><strong>Meta (Facebook) — iOS SDK</strong> — Separately from the RevenueCat → Conversions API pipeline above, the Facebook iOS SDK is installed in the AllTime app and sends standard install and activation events directly to Meta when ATT consent has been granted. These events do not include your name, email, calendar, or health data. <a href="https://www.facebook.com/privacy/policy/" target="_blank">Meta Privacy Policy</a></li>
             </ul>
-            <p>Neither RevenueCat nor Meta receives your name, email, calendar data, health data, or any other content from your AllTime account through this pipeline.</p>
+            <p>Neither RevenueCat nor Meta receives your name, email, calendar data, health data, or any other content from your AllTime account through these pipelines.</p>
 
             <h3>8.4 Your Controls</h3>
             <ul>
